@@ -9,14 +9,3 @@ install_manifest.txt
 compile_commands.json
 CTestTestfile.cmake
 _deps
-
-Core/Src/*.c.orig
-Core/Inc/*.c.orig
-Core/Src/*.h.orig
-Core/Inc/*.h.orig
-Debug/*
-*.launch
-Core/Src/*.c.bak
-Core/Inc/*.c.bak
-Core/Src/*.h.bak
-Core/Inc/*.h.bak

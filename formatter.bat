@@ -1,0 +1,1 @@
+astyle --style=kr --indent=force-tab --suffix=none --recursive Core\*.c,*.h
