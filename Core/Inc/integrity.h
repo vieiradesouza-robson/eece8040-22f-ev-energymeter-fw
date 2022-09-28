@@ -11,10 +11,6 @@
 #ifndef INC_INTEGRITY_H_
 #define INC_INTEGRITY_H_
 
-
-
-#endif /* INC_INTEGRITY_H_ */
-
 #include "common.h"
 
 
@@ -30,3 +26,8 @@ typedef enum {
 ERROR_CODES getCurrentStatus ( void );
 void initCurrentStatus ( void );
 void setCurrentStatus (ERROR_CODES status);
+void goToErrorMode(ERROR_CODES error);
+
+
+#endif /* INC_INTEGRITY_H_ */
+

@@ -200,6 +200,7 @@ static void MX_GPIO_Init(void)
 void Error_Handler(void)
 {
 	/* USER CODE BEGIN Error_Handler_Debug */
+	//TODO: It can be a good idea insert our error function inside this routine
 	/* User can add his own implementation to report the HAL error return state */
 	__disable_irq();
 	while (1) {

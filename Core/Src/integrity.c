@@ -9,6 +9,7 @@
   */
 
 #include "integrity.h"
+#include "ui.h"
 
 static ERROR_CODES currentStatus;
 
@@ -66,7 +67,7 @@ void goToErrorMode(ERROR_CODES error)
 //	__disable_irq();		//If IRQ are enabled, interrupts must be disabled
 	if (getCurrentStatus() == NO_ERROR) {
 		setCurrentStatus(error);
-//		printErrorMessage(error);		//TODO: Define this routine in the UI module
+		printErrorMessage(error);		//TODO: Define this routine in the UI module
 	}
 
 }
