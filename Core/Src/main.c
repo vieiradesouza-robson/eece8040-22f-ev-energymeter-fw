@@ -21,6 +21,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include "integrity.h"
 
 /* USER CODE END Includes */
 
@@ -78,6 +79,7 @@ int main(void)
 	SystemClock_Config();
 
 	/* USER CODE BEGIN SysInit */
+	initCurrentStatus();
 
 	/* USER CODE END SysInit */
 
