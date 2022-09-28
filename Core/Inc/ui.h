@@ -15,3 +15,9 @@
 #endif /* INC_UI_H_ */
 
 #include "common.h"
+#include "stdio.h"
+#include "integrity.h"
+
+
+void printWelcomeMessage( void );
+void printErrorMessage (ERROR_CODES error);
