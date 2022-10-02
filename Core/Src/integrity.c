@@ -10,6 +10,7 @@
 
 #include "integrity.h"
 #include "ui.h"
+#include "power.h"
 
 static ERROR_CODES currentStatus;
 
@@ -70,4 +71,20 @@ void goToErrorMode(ERROR_CODES error)
 		printErrorMessage(error);		//TODO: Define this routine in the UI module
 	}
 
+}
+
+
+/* Function      : houseKeep
+ *
+ * Description   : Calls periodic routines that must be executed to
+ * 					keep the integrity of the system or to change
+ * 					states.
+ *
+ * Parameters    : None.
+ *
+ * Returns		 : None.
+ */
+void houseKeep(void)
+{
+	checkPowerEnState();
 }

@@ -28,6 +28,8 @@ void initCurrentStatus ( void );
 void setCurrentStatus (ERROR_CODES status);
 void goToErrorMode(ERROR_CODES error);
 
+/************************** Integrity Functions **************************/
+void houseKeep(void);
 
 #endif /* INC_INTEGRITY_H_ */
 
