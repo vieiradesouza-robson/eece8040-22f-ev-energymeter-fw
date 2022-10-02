@@ -18,6 +18,9 @@
 
 typedef enum {
 	NO_ERROR = 0,
+	SPI_WRITE_ERROR,
+	SPI_READ_ERROR,
+	SPI_MODE_CONFG_ERROR,
 
 } ERROR_CODES;
 
