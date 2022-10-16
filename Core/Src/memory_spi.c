@@ -39,7 +39,7 @@ void EEPROM_SPI_INIT(SPI_HandleTypeDef * hspi) {
   */
 EepromOperations EEPROM_SPI_WritePage(uint8_t* pBuffer, uint32_t WriteAddr, uint16_t NumByteToWrite) {
     while (EEPROM_SPI->State != HAL_SPI_STATE_READY) {
-        HAL_Delay(1);
+
     }
 
     HAL_StatusTypeDef spiTransmitStatus;
@@ -97,8 +97,8 @@ EepromOperations EEPROM_SPI_WritePage(uint8_t* pBuffer, uint32_t WriteAddr, uint
   * @retval EepromOperations value: EEPROM_STATUS_COMPLETE or EEPROM_STATUS_ERROR
   */
 EepromOperations EEPROM_SPI_WriteBuffer(uint8_t* pBuffer, uint32_t WriteAddr, uint16_t NumByteToWrite) {
-    uint16_t NumOfPage = 0, NumOfSingle = 0, Addr = 0, count = 0, temp = 0;
-    uint16_t sEE_DataNum = 0;
+    uint32_t NumOfPage = 0, NumOfSingle = 0, Addr = 0, count = 0, temp = 0;
+    uint32_t sEE_DataNum = 0;
 
     EepromOperations pageWriteStatus = EEPROM_STATUS_PENDING;
 
@@ -363,10 +363,8 @@ uint8_t EEPROM_SPI_WaitStandbyState(void) {
     do {
 
         while (HAL_SPI_Receive(EEPROM_SPI, (uint8_t*)sEEstatus, 1, 200) == HAL_BUSY) {
-        	HAL_Delay(1);
-        };
 
-        HAL_Delay(1);
+        };
 
     } while ((sEEstatus[0] & EEPROM_WIP_FLAG) == SET); // Write in progress
 
