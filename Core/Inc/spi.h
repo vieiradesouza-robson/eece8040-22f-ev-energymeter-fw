@@ -13,15 +13,6 @@
 #include "common.h"
 #include "stm32l4xx_hal.h"
 
-/************************** Ports Definition **************************/
-
-#define SCLK_GPIO_Port	(GPIOA)
-#define SCLK_Pin		(GPIO_PIN_1)
-#define MOSI_GPIO_Port	(GPIOA)
-#define MOSI_Pin		(GPIO_PIN_7)
-#define MISO_GPIO_Port	(GPIOB)
-#define MISO_Pin		(GPIO_PIN_4)
-
 
 /************************** SPI Primitives **************************/
 
