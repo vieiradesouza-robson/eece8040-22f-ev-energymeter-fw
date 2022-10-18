@@ -8,14 +8,18 @@
   * Date				: September 27, 2021
   ******************************************************************************
   */
-#ifndef INC_MEMORY_SPI_H_
-#define INC_MEMORY_SPI_H_
-
-
-
-#endif /* INC_MEMORY_SPI_H_ */
+#ifndef INC_SD_SPI_H_
+#define INC_SD_SPI_H_
 
 #include "common.h"
+#include "stm32l4xx_hal.h"
+#include "diskio.h"
+#include "main.h"
+#include "fatfs.h"
+
+#define TRUE  1
+#define FALSE 0
+#define bool BYTE
 
 /* Definitions for MMC/SDC command */
 #define CMD0     (0x40+0)     	/* GO_IDLE_STATE */
@@ -52,5 +56,5 @@ DRESULT SD_disk_ioctl (BYTE pdrv, BYTE cmd, void* buff);
 
 extern SPI_HandleTypeDef	hspi1;
 #define HSPI_SDCARD		 	&hspi1
-//#define	SD_CS_PORT			GPIOB
-//#define SD_CS_PIN			GPIO_PIN_12
+
+#endif /* INC_SD_SPI_H_ */

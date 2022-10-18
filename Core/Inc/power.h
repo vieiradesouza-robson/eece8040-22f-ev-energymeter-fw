@@ -13,13 +13,7 @@
 #include "common.h"
 #include "stm32l4xx_hal.h"
 #include "stdbool.h"
-
-/************************** Ports Definition **************************/
-
-#define MCU_PWR_EN_GPIO_Port	(GPIOB)
-#define MCU_PWR_EN_Pin			(GPIO_PIN_3)
-#define PWR_EN_GPIO_Port		(GPIOA)
-#define PWR_EN_Pin				(GPIO_PIN_5)
+#include "main.h"
 
 
 /************************** Power Routines **************************/

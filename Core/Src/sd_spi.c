@@ -1,23 +1,16 @@
 /*******************************************************************************
   * File Name			: sd_spi.c
   * Description			: This module implements functions & wrapper related to
-  * 					  the SPI protocol used to operate the SD card
-  * 					  peripheral. Shall be in charge of implementing the
-  * 					  commands that must be sent to the external memory.
+  * 					  the SPI protocol and user diskio used to operate the
+  * 					  SD card peripheral. Shall be in charge of implementing
+  * 					  the commands that must be sent to the SD card.
   *
   * Author				: Charlie Moreno, Robson Viera de Souza
-  * Date				: September 27, 2021
+  * Creation Date		: September 27, 2021
+  * Last Change Date	: October 18, 2021
   ******************************************************************************
   */
-
-#include "stm32l4xx_hal.h"
-#include "diskio.h"
-#include "main.h"
 #include "sd_spi.h"
-
-#define TRUE  1
-#define FALSE 0
-#define bool BYTE
 
 uint16_t Timer1, Timer2;					/* 1ms Timer Counter */
 
