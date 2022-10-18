@@ -1,15 +1,15 @@
 /*******************************************************************************
-  * File Name			: memory_spi.h
+  * File Name			: eeprom_spi.h
   * Description			: This module contains the definitions of constants and
-  * 					  functions related to the memory SPI protocol. High-level
+  * 					  functions related to the eeprom SPI protocol. High-level
   * 					  routines that will be called by other modules.
   *
   * Author				: Charlie Moreno, Robson Viera de Souza
   * Date				: September 27, 2021
   ******************************************************************************
   */
-#ifndef INC_MEMORY_SPI_H_
-#define INC_MEMORY_SPI_H_
+#ifndef INC_EEPROM_SPI_H_
+#define INC_EEPROM_SPI_H_
 
 #include "common.h"
 #include "main.h"
@@ -59,4 +59,4 @@ uint8_t sEE_ReadStatusRegister(void);
 void  EEPROM_SPI_SendInstruction(uint8_t *instruction, uint8_t size);
 void  EEPROM_SPI_ReadStatusByte(SPI_HandleTypeDef SPIe, uint8_t *statusByte );
 
-#endif /* INC_MEMORY_SPI_H_ */
+#endif /* INC_EEPROM_SPI_H_ */

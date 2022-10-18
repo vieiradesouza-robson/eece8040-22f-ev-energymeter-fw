@@ -1,7 +1,7 @@
 /*******************************************************************************
   * File Name			: memory_spi.c
   * Description			: This module implements functions & wrapper related to
-  * 					  the SPI protocol used to operate the external memory
+  * 					  the SPI protocol used to operate the external eeprom
   * 					  peripheral. Shall be in charge of implementing the
   * 					  commands that must be sent to the external memory.
   *
@@ -10,7 +10,7 @@
   ******************************************************************************
   */
 
-#include "memory_spi.h"
+#include <eeprom_spi.h>
 
 SPI_HandleTypeDef * EEPROM_SPI;
 uint8_t EEPROM_StatusByte;
