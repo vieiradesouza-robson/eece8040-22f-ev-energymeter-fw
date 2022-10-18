@@ -49,6 +49,8 @@ extern "C" {
 
 /* USER CODE END EM */
 
+void HAL_TIM_MspPostInit(TIM_HandleTypeDef *htim);
+
 /* Exported functions prototypes ---------------------------------------------*/
 void Error_Handler(void);
 
@@ -57,10 +59,45 @@ void Error_Handler(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
+#define MCO_Pin GPIO_PIN_0
+#define MCO_GPIO_Port GPIOA
 #define VCP_TX_Pin GPIO_PIN_2
 #define VCP_TX_GPIO_Port GPIOA
+#define ADC_DRDY_Pin GPIO_PIN_3
+#define ADC_DRDY_GPIO_Port GPIOA
+#define ADC_DRDY_EXTI_IRQn EXTI3_IRQn
+#define SD_CD_Pin GPIO_PIN_4
+#define SD_CD_GPIO_Port GPIOA
+#define SD_CD_EXTI_IRQn EXTI4_IRQn
+#define PWR_EN_Pin GPIO_PIN_5
+#define PWR_EN_GPIO_Port GPIOA
+#define PWR_EN_EXTI_IRQn EXTI9_5_IRQn
+#define ADC_CLK_Pin GPIO_PIN_6
+#define ADC_CLK_GPIO_Port GPIOA
+#define BATT_VOLTAGE_Pin GPIO_PIN_0
+#define BATT_VOLTAGE_GPIO_Port GPIOB
+#define ADC_CS_Pin GPIO_PIN_1
+#define ADC_CS_GPIO_Port GPIOB
+#define BLUE_LED_Pin GPIO_PIN_8
+#define BLUE_LED_GPIO_Port GPIOA
+#define RED_LED_Pin GPIO_PIN_9
+#define RED_LED_GPIO_Port GPIOA
+#define GREEN_LED_Pin GPIO_PIN_10
+#define GREEN_LED_GPIO_Port GPIOA
+#define SWDIO_Pin GPIO_PIN_13
+#define SWDIO_GPIO_Port GPIOA
+#define SWCLK_Pin GPIO_PIN_14
+#define SWCLK_GPIO_Port GPIOA
 #define VCP_RX_Pin GPIO_PIN_15
 #define VCP_RX_GPIO_Port GPIOA
+#define MCU_PWR_EN_Pin GPIO_PIN_3
+#define MCU_PWR_EN_GPIO_Port GPIOB
+#define EEPROM_CS_Pin GPIO_PIN_5
+#define EEPROM_CS_GPIO_Port GPIOB
+#define ADC_RESET_Pin GPIO_PIN_6
+#define ADC_RESET_GPIO_Port GPIOB
+#define SD_CS_Pin GPIO_PIN_7
+#define SD_CS_GPIO_Port GPIOB
 /* USER CODE BEGIN Private defines */
 
 /* USER CODE END Private defines */
