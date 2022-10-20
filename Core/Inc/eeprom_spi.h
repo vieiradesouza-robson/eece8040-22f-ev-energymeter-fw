@@ -5,7 +5,8 @@
   * 					  routines that will be called by other modules.
   *
   * Author				: Charlie Moreno, Robson Viera de Souza
-  * Date				: September 27, 2021
+  * Creation Date		: September 27, 2021
+  * Last Change Date	: October 18, 2021
   ******************************************************************************
   */
 #ifndef INC_EEPROM_SPI_H_
@@ -15,17 +16,21 @@
 #include "main.h"
 
 /* M95M04-DR SPI EEPROM defines */
-#define EEPROM_WREN  0x06  //Write Enable instruction
-#define EEPROM_WRDI  0x04  //Write Disable instruction
-#define EEPROM_RDSR  0x05  //Read Status Register instruction
-#define EEPROM_WRSR  0x01  //Write Status Register instruction
-#define EEPROM_READ  0x03  //Read from Memory Array instruction
-#define EEPROM_WRITE 0x02  //Write to Memory Array instruction
+#define EEPROM_WREN		0x06  //Write Enable instruction
+#define EEPROM_WRDI		0x04  //Write Disable instruction
+#define EEPROM_RDSR		0x05  //Read Status Register instruction
+#define EEPROM_WRSR		0x01  //Write Status Register instruction
+#define EEPROM_READ		0x03  //Read from Memory Array instruction
+#define EEPROM_WRITE	0x02  //Write to Memory Array instruction
+#define EEPROM_READ_ID	0x83  //Write to identification page
+#define EEPROM_WRITE_ID	0x82  //Write to Memory Array instruction
 
 #define EEPROM_WIP_FLAG        0x01  //Write In Progress (WIP) flag
 
 #define EEPROM_PAGESIZE        512   //Page size in bytes according to datasheet
 #define EEPROM_BUFFER_SIZE     32    //EEPROM Buffer size in bytes.
+
+#define EEPROM_MAX_ADDRESS	   0x7FFFF //Address of the last EEPROM memory byte
 
 #define EEPROM_CS_GPIO_Port	   GPIOB		//Port to which EEPROM CS pin is connected
 #define EEPROM_CS_Pin          GPIO_PIN_5	//Pin to which EEPROM CS pin is connected
@@ -43,10 +48,12 @@ typedef enum {
 } EepromOperations;
 
 /* High level functions */
-void EEPROM_SPI_INIT(SPI_HandleTypeDef * hspi);
+void EEPROM_SPI_INIT(void);
 EepromOperations EEPROM_SPI_WriteBuffer(uint8_t* pBuffer, uint32_t WriteAddr, uint16_t NumByteToWrite);
 EepromOperations EEPROM_SPI_WritePage(uint8_t* pBuffer, uint32_t WriteAddr, uint16_t NumByteToWrite);
 EepromOperations EEPROM_SPI_ReadBuffer(uint8_t* pBuffer, uint32_t ReadAddr, uint16_t NumByteToRead);
+EepromOperations EEPROM_SPI_ReadID(uint8_t* pBuffer);
+EepromOperations EEPROM_SPI_WriteID(uint8_t* pBuffer, uint32_t WriteAddr, uint16_t NumByteToWrite);
 uint8_t EEPROM_SPI_WaitStandbyState(void);
 
 /* Low level functions */

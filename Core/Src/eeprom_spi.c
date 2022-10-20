@@ -6,23 +6,23 @@
   * 					  commands that must be sent to the external memory.
   *
   * Author				: Charlie Moreno, Robson Viera de Souza
-  * Date				: September 27, 2021
+  * Creation Date		: September 27, 2021
+  * Last Change Date	: October 18, 2021
   ******************************************************************************
   */
 
 #include <eeprom_spi.h>
 
+extern SPI_HandleTypeDef	hspi1;
 SPI_HandleTypeDef * EEPROM_SPI;
-uint8_t EEPROM_StatusByte;
-uint8_t RxBuffer[EEPROM_BUFFER_SIZE] = {0x00};
 
 /**
  * @brief Init EEPROM SPI
  *
  * @param hspi Pointer to SPI struct handler
  */
-void EEPROM_SPI_INIT(SPI_HandleTypeDef * hspi) {
-    EEPROM_SPI = hspi;
+void EEPROM_SPI_INIT(void) {
+    EEPROM_SPI = &hspi1;
 }
 
 /**
@@ -116,7 +116,7 @@ EepromOperations EEPROM_SPI_WriteBuffer(uint8_t* pBuffer, uint32_t WriteAddr, ui
                 return pageWriteStatus;
             }
 
-        } else { /* NumByteToWrite > EEPROM_PAGESIZE */
+        } else { /* NumByteToWrite >= EEPROM_PAGESIZE */
             while (NumOfPage--) {
                 sEE_DataNum = EEPROM_PAGESIZE;
                 pageWriteStatus = EEPROM_SPI_WritePage(pBuffer, WriteAddr, sEE_DataNum);
@@ -210,7 +210,7 @@ EepromOperations EEPROM_SPI_WriteBuffer(uint8_t* pBuffer, uint32_t WriteAddr, ui
   * @param  pBuffer: pointer to the buffer that receives the data read from the EEPROM.
   * @param  ReadAddr: EEPROM's internal address to read from.
   * @param  NumByteToRead: number of bytes to read from the EEPROM.
-  * @retval None
+  * @retval EepromOperations value: EEPROM_STATUS_COMPLETE or EEPROM_STATUS_ERROR
   */
 EepromOperations EEPROM_SPI_ReadBuffer(uint8_t* pBuffer, uint32_t ReadAddr, uint16_t NumByteToRead) {
     while (EEPROM_SPI->State != HAL_SPI_STATE_READY) {
@@ -242,6 +242,97 @@ EepromOperations EEPROM_SPI_ReadBuffer(uint8_t* pBuffer, uint32_t ReadAddr, uint
     EEPROM_CS_HIGH();
 
     return EEPROM_STATUS_COMPLETE;
+}
+
+/**
+  * @brief  Reads identification page from the EEPROM.
+  *
+  * @param  pBuffer: pointer to the buffer that receives the data read from the EEPROM identification page.
+  * @retval EepromOperations value: EEPROM_STATUS_COMPLETE or EEPROM_STATUS_ERROR
+  */
+EepromOperations EEPROM_SPI_ReadID(uint8_t* pBuffer) {
+    while (EEPROM_SPI->State != HAL_SPI_STATE_READY) {
+    	HAL_Delay(1);
+    }
+
+    uint8_t header[4];
+
+    header[0] = EEPROM_READ_ID;    // Send "Read identification page" instruction
+    header[1] = 0;  // Start on address zero since we are reading the whole page
+    header[2] = 0;
+    header[3] = 0;
+
+    // Select the EEPROM: Chip Select low
+    EEPROM_CS_LOW();
+
+    /* Send WriteAddr address byte to read from */
+    EEPROM_SPI_SendInstruction(header, 4);
+
+    while (HAL_SPI_Receive(EEPROM_SPI, (uint8_t*)pBuffer, EEPROM_PAGESIZE, 200) == HAL_BUSY) {
+    	HAL_Delay(1);
+    };
+
+    // Deselect the EEPROM: Chip Select high
+    EEPROM_CS_HIGH();
+
+    return EEPROM_STATUS_COMPLETE;
+}
+
+/**
+  * @brief  Writes data to the EEPROM identification page.
+  *
+  * @param  pBuffer: pointer to the buffer that has the data to be written to the EEPROM identification page.
+  * @param  WriteAddr: EEPROM's identification page address to write to.
+  * @param  NumByteToWrite: number of bytes to write to the EEPROM identification page.
+  * @retval EepromOperations value: EEPROM_STATUS_COMPLETE or EEPROM_STATUS_ERROR
+  */
+EepromOperations EEPROM_SPI_WriteID(uint8_t* pBuffer, uint32_t WriteAddr, uint16_t NumByteToWrite) {
+	while (EEPROM_SPI->State != HAL_SPI_STATE_READY) {
+
+	}
+
+	HAL_StatusTypeDef spiTransmitStatus;
+
+	sEE_WriteEnable();
+
+	//the instruction is sent in a package of 4 bytes, one is the write instruction itself and the other 3 the address
+	uint8_t header[4];
+
+	header[0] = EEPROM_WRITE_ID;    // Send "Write to Memory" instruction
+	header[1] = WriteAddr >> 16; // Send 24-bit address
+	header[2] = WriteAddr >> 8;
+	header[3] = WriteAddr;
+
+	//Select the EEPROM: Chip Select low
+	EEPROM_CS_LOW();
+
+	EEPROM_SPI_SendInstruction((uint8_t*)header, 4);
+
+	//Makes 5 attempts to write the data
+	for (uint8_t i = 0; i < 5; i++) {
+		spiTransmitStatus = HAL_SPI_Transmit(EEPROM_SPI, pBuffer, NumByteToWrite, 100);
+
+		if (spiTransmitStatus == HAL_BUSY) {
+			HAL_Delay(5);
+		} else {
+			break;
+		}
+	}
+
+	//Deselect the EEPROM: Chip Select high
+	EEPROM_CS_HIGH();
+
+	//Wait the end of EEPROM writing
+	EEPROM_SPI_WaitStandbyState();
+
+	//Disable the write access to the EEPROM
+	sEE_WriteDisable();
+
+	if (spiTransmitStatus == HAL_ERROR) {
+		return EEPROM_STATUS_ERROR;
+	} else {
+		return EEPROM_STATUS_COMPLETE;
+	}
 }
 
 /**
