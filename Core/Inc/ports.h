@@ -14,16 +14,6 @@
 #include "common.h"
 #include "stm32l4xx_hal.h"
 
-/************************** Ports Definition **************************/
-
-/* RGB Led */
-#define LED_R_GPIO_Port	(GPIOA)
-#define LED_R_Pin		(GPIO_PIN_9)
-#define LED_G_GPIO_Port	(GPIOA)
-#define LED_G_Pin		(GPIO_PIN_10)
-#define LED_B_GPIO_Port	(GPIOA)
-#define LED_B_Pin		(GPIO_PIN_8)
-
 
 /************************** Ports Routines **************************/
 

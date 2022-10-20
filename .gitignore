@@ -21,6 +21,5 @@ Core/Inc/*.c.bak
 Core/Src/*.h.bak
 Core/Inc/*.h.bak
 
-.settings/language.settings.xml
-
 *.bak
+.settings/language.settings.xml
