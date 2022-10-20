@@ -11,9 +11,8 @@
 #ifndef INC_LOG_H_
 #define INC_LOG_H_
 
+#include "common.h"
+#include "sd.h"
 
 
 #endif /* INC_LOG_H_ */
-
-#include "common.h"
-
