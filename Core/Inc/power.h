@@ -16,6 +16,7 @@
 #include "main.h"
 
 
+
 /************************** Power Routines **************************/
 void initPowerModule (void);
 void checkPowerEnState (void);

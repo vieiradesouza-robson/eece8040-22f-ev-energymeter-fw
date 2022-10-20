@@ -14,6 +14,7 @@
 #include "power.h"
 #include "ports.h"
 #include "stdbool.h"
+#include "main.h"
 
 static bool waitingToTurnOff;
 

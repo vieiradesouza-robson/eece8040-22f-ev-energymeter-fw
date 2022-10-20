@@ -40,6 +40,7 @@
 /* Private define ------------------------------------------------------------*/
 #include "sd_spi.h"
 
+
 /* Private variables ---------------------------------------------------------*/
 /* Disk status */
 static volatile DSTATUS Stat = STA_NOINIT;
