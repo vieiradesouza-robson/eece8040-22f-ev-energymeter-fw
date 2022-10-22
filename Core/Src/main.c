@@ -417,7 +417,7 @@ static void MX_TIM16_Init(void)
 {
 
   /* USER CODE BEGIN TIM16_Init 0 */
-
+  GPIO_InitTypeDef GPIO_InitStruct = {0};
   /* USER CODE END TIM16_Init 0 */
 
   TIM_OC_InitTypeDef sConfigOC = {0};
@@ -464,6 +464,13 @@ static void MX_TIM16_Init(void)
     Error_Handler();
   }
   /* USER CODE BEGIN TIM16_Init 2 */
+
+  /*Configure GPIO pin : ADC_CLK_Pin */
+    GPIO_InitStruct.Pin = ADC_CLK_Pin;
+    GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
+    GPIO_InitStruct.Pull = GPIO_NOPULL;
+    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
+    HAL_GPIO_Init(ADC_CLK_GPIO_Port, &GPIO_InitStruct);
 
   /* USER CODE END TIM16_Init 2 */
   HAL_TIM_MspPostInit(&htim16);
@@ -520,7 +527,8 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOB_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOB, ADC_CS_Pin|MCU_PWR_EN_Pin|EEPROM_CS_Pin|SD_CS_Pin, GPIO_PIN_SET);
+  HAL_GPIO_WritePin(GPIOB, ADC_CS_Pin|MCU_PWR_EN_Pin|EEPROM_CS_Pin|ADC_RESET_Pin
+                          |SD_CS_Pin, GPIO_PIN_SET);
 
   /*Configure GPIO pin : ADC_DRDY_Pin */
   GPIO_InitStruct.Pin = ADC_DRDY_Pin;
@@ -540,8 +548,10 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_PULLDOWN;
   HAL_GPIO_Init(PWR_EN_GPIO_Port, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : ADC_CS_Pin MCU_PWR_EN_Pin EEPROM_CS_Pin SD_CS_Pin */
-  GPIO_InitStruct.Pin = ADC_CS_Pin|MCU_PWR_EN_Pin|EEPROM_CS_Pin|SD_CS_Pin;
+  /*Configure GPIO pins : ADC_CS_Pin MCU_PWR_EN_Pin EEPROM_CS_Pin ADC_RESET_Pin
+                           SD_CS_Pin */
+  GPIO_InitStruct.Pin = ADC_CS_Pin|MCU_PWR_EN_Pin|EEPROM_CS_Pin|ADC_RESET_Pin
+                          |SD_CS_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
