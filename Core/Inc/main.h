@@ -94,8 +94,6 @@ void Error_Handler(void);
 #define MCU_PWR_EN_GPIO_Port GPIOB
 #define EEPROM_CS_Pin GPIO_PIN_5
 #define EEPROM_CS_GPIO_Port GPIOB
-#define ADC_RESET_Pin GPIO_PIN_6
-#define ADC_RESET_GPIO_Port GPIOB
 #define SD_CS_Pin GPIO_PIN_7
 #define SD_CS_GPIO_Port GPIOB
 /* USER CODE BEGIN Private defines */

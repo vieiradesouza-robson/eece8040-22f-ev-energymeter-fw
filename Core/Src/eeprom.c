@@ -25,7 +25,6 @@ uint8_t extraInfo[EEPROM_PARAMETERS_SIZE];
 
 EepromOperations EEPROMgetLogMetaData(void){
 	EepromOperations res = EEPROM_STATUS_COMPLETE;
-	uint8_t i = 0;
 
 	res = EEPROM_SPI_ReadID(idBuffer);
 
@@ -134,5 +133,5 @@ EepromOperations EEPROMendLog(void){
 }
 
 uint8_t *EEPROMextraInfo(void){
-	return &extraInfo;
+	return (uint8_t *)&extraInfo;
 }
