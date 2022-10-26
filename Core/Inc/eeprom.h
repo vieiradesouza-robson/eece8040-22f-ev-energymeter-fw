@@ -21,11 +21,11 @@
 //size (in Bytes) of the EEPROM identification page reserved for ADC calibration parameters and other stuff
 #define EEPROM_PARAMETERS_SIZE	EEPROM_PAGESIZE - (3 * EEPROM_MAX_LOG)
 
-typedef struct{
+typedef struct {
 	uint32_t startAddress;
 	uint32_t endAddress;
 	uint32_t size;
-}logMetaData;
+} logMetaData;
 
 EepromOperations EEPROMgetLogMetaData(void);
 EepromOperations EEPROMstartLog(void);
