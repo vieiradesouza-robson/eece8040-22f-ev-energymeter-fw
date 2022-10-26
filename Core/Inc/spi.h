@@ -13,6 +13,7 @@
 #include "common.h"
 #include "stm32l4xx_hal.h"
 
+
 /************************** SPI Primitives **************************/
 
 void spiWrite(SPI_HandleTypeDef* handler, uint8_t* pData, uint16_t size, uint32_t tout);
