@@ -16,16 +16,18 @@ FATFS *pfs;
 FIL fil;
 bool flagFileOpen = FALSE;
 
-bool SDisFileOpen(void){
+bool SDisFileOpen(void)
+{
 	return flagFileOpen;
 }
 
-uint32_t SDfreeSpace(void){
+uint32_t SDfreeSpace(void)
+{
 	DWORD fre_clust;
 	uint32_t free;
 
 	/* Check free space */
-	if(f_getfree("", &fre_clust, &pfs) != FR_OK){
+	if(f_getfree("", &fre_clust, &pfs) != FR_OK) {
 		Error_Handler();
 	}
 
@@ -34,26 +36,27 @@ uint32_t SDfreeSpace(void){
 	return free;
 }
 
-FRESULT SDstartLog(void){
-/* Mount SD Card */
+FRESULT SDstartLog(void)
+{
+	/* Mount SD Card */
 	FRESULT res;
 	uint8_t fileIndex = 0;
 	char fileName[10] = "";
 
 	res = f_mount(&fs, "", 0);
 
-	if(res != FR_OK){
+	if(res != FR_OK) {
 		return res;
 	}
 
 	//creates a new file with the next index available, limited to index 99
-	do{
+	do {
 		sprintf(fileName, "log%2d.csv", fileIndex);
 		res = f_open(&fil, fileName, FA_CREATE_NEW | FA_READ | FA_WRITE);
 		fileIndex++;
-	}while(fileIndex < MAXFILES && res != FR_OK);
+	} while(fileIndex < MAXFILES && res != FR_OK);
 
-	if (res!=FR_OK){
+	if (res!=FR_OK) {
 		return FR_INVALID_OBJECT;
 	}
 
@@ -65,12 +68,13 @@ FRESULT SDstartLog(void){
 	return res;
 }
 
-int16_t SDlogData(uint32_t timestamp, float voltage, float current){
+int16_t SDlogData(uint32_t timestamp, float voltage, float current)
+{
 	char str[27];
 	uint32_t hour, minute, second, milisecond;
 
 	//if the file is not open, exits
-	if (!SDisFileOpen()){
+	if (!SDisFileOpen()) {
 		return -1;
 	}
 
@@ -86,15 +90,16 @@ int16_t SDlogData(uint32_t timestamp, float voltage, float current){
 	return (int16_t)f_puts(str, &fil);
 }
 
-FRESULT SDendLog(void){
-/* Mount SD Card */
+FRESULT SDendLog(void)
+{
+	/* Mount SD Card */
 	FRESULT res;
 
 	/* Close file */
-	if (SDisFileOpen()){
+	if (SDisFileOpen()) {
 		res = f_close(&fil);
 
-		if(res != FR_OK){
+		if(res != FR_OK) {
 			return res;
 		}
 	}
@@ -102,7 +107,7 @@ FRESULT SDendLog(void){
 	/* Unmount SDCARD */
 	res = f_mount(NULL, "", 1);
 
-	if(res != FR_OK){
+	if(res != FR_OK) {
 		return res;
 	}
 
@@ -111,18 +116,19 @@ FRESULT SDendLog(void){
 	return res;
 }
 
-uint8_t SDgetLogList(uint32_t *files[MAXFILES]){
+uint8_t SDgetLogList(uint32_t *files[MAXFILES])
+{
 	FRESULT res;
 	uint8_t fileQty = 0;
 	char fileName[11] = "";
 	FILINFO fileInfo;
 
-	do{
+	do {
 		sprintf(fileName, "/log%2d.csv", fileQty);
 		res = f_stat(fileName,&fileInfo);
 		*files[fileQty] = (uint32_t)fileInfo.fsize;
 		fileQty++;
-	}while(fileQty < MAXFILES && res != FR_OK);
+	} while(fileQty < MAXFILES && res != FR_OK);
 
 	return fileQty;
 }

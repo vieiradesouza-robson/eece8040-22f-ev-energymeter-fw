@@ -42,9 +42,9 @@
  * EEPROM Operations statuses
  */
 typedef enum {
-    EEPROM_STATUS_PENDING,
-    EEPROM_STATUS_COMPLETE,
-    EEPROM_STATUS_ERROR
+	EEPROM_STATUS_PENDING,
+	EEPROM_STATUS_COMPLETE,
+	EEPROM_STATUS_ERROR
 } EepromOperations;
 
 /* High level functions */
