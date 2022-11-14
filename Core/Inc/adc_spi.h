@@ -32,18 +32,47 @@
 #define NOT_SYNC_RESET_Pin			(GPIO_PIN_6)
 
 /************************** Commands Definition **************************/
-#define NULL_CMD					(0x00000000)
-#define RESET_CMD					(0x00000011)
-#define STANDBY_CMD					(0x00000022)
-#define WAKEUP_CMD					(0x00000033)
-#define LOCK_CMD					(0x00000555)
-#define UNLOCK_CMD					(0x00000655)
+#define NULL_CMD					(0x0000)
+#define RESET_CMD					(0x0011)
+#define STANDBY_CMD					(0x0022)
+#define WAKEUP_CMD					(0x0033)
+#define LOCK_CMD					(0x0555)
+#define UNLOCK_CMD					(0x0655)
+#define RREG_CMD					(0xA000)
+#define WREG_CMD					(0x6000)
+
+/************************** Register Definition **************************/
+#define ID_REG						(0x0000)
+#define STATUS_REG					(0x0001)
+#define MODE_REG					(0x0002)
+#define CLOCK_REG					(0x0003)
+#define GAIN_REG					(0x0004)
+#define CFG_REG						(0x0006)
+#define THRSHLD_MSB_REG				(0x0007)
+#define THRSHLD_LSB_REG				(0x0008)
+#define CH0_CFG_REG					(0x0009)
+#define CH0_OCAL_MSB_REG			(0x000A)
+#define CH0_OCAL_LSB_REG			(0x000B)
+#define CH0_GCAL_MSB_REG			(0x000C)
+#define CH0_GCAL_LSB_REG			(0x000D)
+#define CH1_CFG_REG					(0x000E)
+#define CH1_OCAL_MSB_REG			(0x000F)
+#define CH1_OCAL_LSB_REG			(0x0010)
+#define CH1_GCAL_MSB_REG			(0x0011)
+#define CH1_GCAL_LSB_REG			(0x0012)
+#define CH2_CFG_REG					(0x0013)
+#define CH2_OCAL_MSB_REG			(0x0014)
+#define CH2_OCAL_LSB_REG			(0x0015)
+#define CH2_GCAL_MSB_REG			(0x0016)
+#define CH2_GCAL_LSB_REG			(0x0017)
+#define REGMAP_CRC_REG				(0x003E)
+#define RESERVED_REG				(0x003F)
 
 
 /************************** ADC SPI Routines **************************/
 void initAdSpi(TIM_HandleTypeDef *handler);
 bool isDataReady(void);
-
+uint8_t readAds131mRegister (TIM_HandleTypeDef *timHandler, SPI_HandleTypeDef* spiHandler);
 
 #endif /* INC_ADC_SPI_H_ */
 

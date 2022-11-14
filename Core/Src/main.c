@@ -25,6 +25,7 @@
 #include "integrity.h"
 #include "ui.h"
 #include "power.h"
+#include "adc_spi.h"
 
 /* USER CODE END Includes */
 
@@ -113,7 +114,7 @@ int main(void)
 	MX_SPI1_Init();
 	MX_FATFS_Init();
 	/* USER CODE BEGIN 2 */
-	HAL_TIM_PWM_Start(&htim16, TIM_CHANNEL_1);
+//	HAL_TIM_PWM_Start(&htim16, TIM_CHANNEL_1);
 	initPowerModule();
 	//TODO: Initialize ADC and Memory SPI (CS and other GPIO pins, and write initialization commands if needed).
 
@@ -123,6 +124,7 @@ int main(void)
 	/* USER CODE BEGIN WHILE */
 
 	printWelcomeMessage();
+	readAds131mRegister(&htim16,&hspi1);
 	while (1) {
 		/* USER CODE END WHILE */
 

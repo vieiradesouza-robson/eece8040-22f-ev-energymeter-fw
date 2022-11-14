@@ -15,6 +15,8 @@
 #include "ports.h"
 
 
+/************************** ADC SPI Primitives **************************/
+
 /* Function      : setAdCS
  *
  * Description   : Set CS signal.
@@ -115,4 +117,61 @@ void readAdSpi(TIM_HandleTypeDef *timHandler, SPI_HandleTypeDef* spiHandler, uin
 		setAdCS();
 		HAL_TIM_PWM_Stop(timHandler, CLK_OUT_CHANNEL);
 	}
+}
+
+
+/************************** ADC SPI Routines **************************/
+
+
+/* Function      : readAdSpi
+ *
+ * Description   : Function to write through the SPI peripheral
+ *
+ * Parameters    :  timHandler: Timer handler for HAL layer.
+ * 					spiHandler: SPI handler for HAL layer.
+ * 					pData: Pointer to the buffer where the data will be stored.
+ * 					size: Size of data to be received.
+ * 					eot: End of transmission flag.
+ *
+ * Returns         : None
+ */
+
+uint8_t readAds131mRegister (TIM_HandleTypeDef *timHandler, SPI_HandleTypeDef* spiHandler)
+{
+	uint8_t receivedByte = 0xFF;
+	uint16_t sentData = 0x0000;
+	uint8_t *pSentData;
+	uint8_t dummyByte = 0xFF;
+	HAL_StatusTypeDef    errorcode = HAL_OK;
+
+	pSentData = (uint8_t *)&sentData;
+	sentData = RREG_CMD | (ID_REG<<7);
+
+	while (!isDataReady) {;}
+	HAL_TIM_PWM_Start(timHandler, CLK_OUT_CHANNEL);	//Start Clock signal
+	clearAdCS();	// CS is active Low
+	spiWrite(spiHandler, pSentData, sizeof(sentData), 100);
+	for (uint8_t i=0; i<3; i++){
+		spiWrite(spiHandler, &dummyByte, sizeof(dummyByte), 100);
+	}
+	setAdCS();
+	HAL_TIM_PWM_Stop(timHandler, CLK_OUT_CHANNEL);
+
+	sentData = NULL_CMD;
+	while (!isDataReady) {;}
+	HAL_TIM_PWM_Start(timHandler, CLK_OUT_CHANNEL);	//Start Clock signal
+	clearAdCS();	// CS is active Low
+
+	errorcode = HAL_SPI_TransmitReceive(spiHandler, pSentData, &receivedByte, sizeof(receivedByte), 100);
+	for (uint8_t i=0; i<3; i++){
+		spiWrite(spiHandler, &dummyByte, sizeof(dummyByte), 100);
+	}
+	setAdCS();
+	HAL_TIM_PWM_Stop(timHandler, CLK_OUT_CHANNEL);
+
+	if (errorcode != HAL_OK) {
+		return (uint8_t)errorcode;
+	}
+
+	return receivedByte;
 }
