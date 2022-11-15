@@ -138,40 +138,52 @@ void readAdSpi(TIM_HandleTypeDef *timHandler, SPI_HandleTypeDef* spiHandler, uin
 
 uint8_t readAds131mRegister (TIM_HandleTypeDef *timHandler, SPI_HandleTypeDef* spiHandler)
 {
-	uint8_t receivedByte = 0xFF;
-	uint16_t sentData = 0x0000;
+	uint8_t receivedByte[15];
+	uint8_t sentData[15];
 	uint8_t *pSentData;
-	uint8_t dummyByte = 0xFF;
+	uint8_t dummyByte = 0x00;
 	HAL_StatusTypeDef    errorcode = HAL_OK;
 
-	pSentData = (uint8_t *)&sentData;
-	sentData = RREG_CMD | (ID_REG<<7);
-
-	while (!isDataReady) {;}
-	HAL_TIM_PWM_Start(timHandler, CLK_OUT_CHANNEL);	//Start Clock signal
-	clearAdCS();	// CS is active Low
-	spiWrite(spiHandler, pSentData, sizeof(sentData), 100);
-	for (uint8_t i=0; i<3; i++){
-		spiWrite(spiHandler, &dummyByte, sizeof(dummyByte), 100);
+	pSentData = (uint8_t *)&sentData[0];
+//	sentData = RREG_CMD | (ID_REG<<7);
+	sentData[0] = 0x00;
+	sentData[1] = 0x00;
+	sentData[2] = 0xA0;
+	for (uint8_t i=3; i<15; i++){
+		sentData[i] = dummyByte;
 	}
-	setAdCS();
-	HAL_TIM_PWM_Stop(timHandler, CLK_OUT_CHANNEL);
 
-	sentData = NULL_CMD;
-	while (!isDataReady) {;}
-	HAL_TIM_PWM_Start(timHandler, CLK_OUT_CHANNEL);	//Start Clock signal
+
+//	HAL_TIM_PWM_Start(timHandler, CLK_OUT_CHANNEL);	//Start Clock signal
+	while (!isDataReady()) {;}
+
+	clearAdCS();	// CS is active Low
+//	spiWrite(spiHandler, pSentData, sizeof(sentData), 100);
+	spiWrite(spiHandler, pSentData, 15, 100);
+//	for (uint8_t i=0; i<12; i++){
+//		spiWrite(spiHandler, &dummyByte, sizeof(dummyByte), 100);
+//	}
+	setAdCS();
+//	HAL_TIM_PWM_Stop(timHandler, CLK_OUT_CHANNEL);
+
+	sentData[0] = 0x00;
+	sentData[1] = 0x00;
+	sentData[2] = 0x00;
+	while (!isDataReady()) {;}
+//	HAL_TIM_PWM_Start(timHandler, CLK_OUT_CHANNEL);	//Start Clock signal
 	clearAdCS();	// CS is active Low
 
-	errorcode = HAL_SPI_TransmitReceive(spiHandler, pSentData, &receivedByte, sizeof(receivedByte), 100);
-	for (uint8_t i=0; i<3; i++){
-		spiWrite(spiHandler, &dummyByte, sizeof(dummyByte), 100);
-	}
+//	errorcode = HAL_SPI_TransmitReceive(spiHandler, pSentData, &receivedByte, sizeof(receivedByte), 100);
+	errorcode = HAL_SPI_TransmitReceive(spiHandler, pSentData, &receivedByte[0], 15, 100);
+//	for (uint8_t i=0; i<12; i++){
+//		spiWrite(spiHandler, &dummyByte, sizeof(dummyByte), 100);
+//	}
 	setAdCS();
-	HAL_TIM_PWM_Stop(timHandler, CLK_OUT_CHANNEL);
+//	HAL_TIM_PWM_Stop(timHandler, CLK_OUT_CHANNEL);
 
 	if (errorcode != HAL_OK) {
 		return (uint8_t)errorcode;
 	}
 
-	return receivedByte;
+	return receivedByte[0];
 }

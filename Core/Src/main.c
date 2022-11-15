@@ -26,6 +26,7 @@
 #include "ui.h"
 #include "power.h"
 #include "adc_spi.h"
+#include "spi.h"
 
 /* USER CODE END Includes */
 
@@ -114,9 +115,10 @@ int main(void)
 	MX_SPI1_Init();
 	MX_FATFS_Init();
 	/* USER CODE BEGIN 2 */
-//	HAL_TIM_PWM_Start(&htim16, TIM_CHANNEL_1);
+	HAL_TIM_PWM_Start(&htim16, TIM_CHANNEL_1);
 	initPowerModule();
 	//TODO: Initialize ADC and Memory SPI (CS and other GPIO pins, and write initialization commands if needed).
+	modifySpiMode(&hspi1, SPI_POLARITY_LOW, SPI_PHASE_2EDGE);
 
 	/* USER CODE END 2 */
 
@@ -130,6 +132,8 @@ int main(void)
 
 		/* USER CODE BEGIN 3 */
 		houseKeep();
+		HAL_Delay(1000);
+		readAds131mRegister(&htim16,&hspi1);
 
 	}
 	/* USER CODE END 3 */
