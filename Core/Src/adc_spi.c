@@ -67,15 +67,35 @@ uint8_t ADCwriteReg(uint8_t reg, uint32_t data) {
   printf("Command = %x %x %x\n\r", commandWord[0], commandWord[1], commandWord[2]);
   printf("Reg data = %x %x %x\n\r", commandWord[3], commandWord[4], commandWord[5]);
 
+  //clear the ADC SPI buffer
+  ADC_CS_ENABLE();
+
+  while (ADC_SPI->State != HAL_SPI_STATE_READY) {
+  	HAL_Delay(1);
+  }
+
+  HAL_SPI_Transmit(ADC_SPI, ADCdummy, ADC_WORD_SIZE/8 * 5, ADC_TIMEOUT);
+
+  ADC_CS_DISABLE();
+
+  if (HAL_GPIO_ReadPin(ADC_DRDY_GPIO_Port, ADC_DRDY_Pin) == GPIO_PIN_RESET){
+	  ADC_CS_ENABLE();
+
+	  while (ADC_SPI->State != HAL_SPI_STATE_READY) {
+	  	HAL_Delay(1);
+	  }
+
+	  HAL_SPI_Transmit(ADC_SPI, ADCdummy, ADC_WORD_SIZE/8 * 5, ADC_TIMEOUT);
+
+	  ADC_CS_DISABLE();
+  }
+
+  while(HAL_GPIO_ReadPin(ADC_DRDY_GPIO_Port, ADC_DRDY_Pin) == GPIO_PIN_SET){}
+
   ADC_CS_ENABLE();
 
   while (ADC_SPI->State != HAL_SPI_STATE_READY) {
 	HAL_Delay(1);
-  }
-
-  //clear the ADC SPI buffer
-  for (uint8_t i = 0; i<2; i++){
-	  HAL_SPI_Transmit(ADC_SPI, ADCdummy, ADC_WORD_SIZE/8 * 5, ADC_TIMEOUT);
   }
 
   HAL_SPI_Transmit(ADC_SPI, commandWord, ADC_WORD_SIZE/8 * 5, ADC_TIMEOUT);
@@ -84,10 +104,15 @@ uint8_t ADCwriteReg(uint8_t reg, uint32_t data) {
 
   // Get response
 
+  while(HAL_GPIO_ReadPin(ADC_DRDY_GPIO_Port, ADC_DRDY_Pin) == GPIO_PIN_SET){}
+
   ADC_CS_ENABLE();
 
-  while (HAL_SPI_TransmitReceive(ADC_SPI, ADCdummy, responseArr, ADC_WORD_SIZE/8 * 5, ADC_TIMEOUT) == HAL_BUSY) {
+  while (ADC_SPI->State != HAL_SPI_STATE_READY) {
 	HAL_Delay(1);
+  }
+
+  while (HAL_SPI_TransmitReceive(ADC_SPI, ADCdummy, responseArr, ADC_WORD_SIZE/8 * 5, ADC_TIMEOUT) == HAL_BUSY) {
   }
 
   ADC_CS_DISABLE();
@@ -121,12 +146,12 @@ uint8_t ADCinit(SPI_HandleTypeDef * hspi) {
   }
 
   //disable all channels to enable short frames during configuration
-  regConfig = (CLOCK_CH0_DIS | CLOCK_CH1_DIS | CLOCK_CH2_DIS | CLOCK_TBM | CLOCK_OSR | CLOCK_PWR);
-  res = ADCwriteReg(CLOCK, regConfig);
-  if (res == 0){
-	  printf("Error disabling channels.\n\r");
-	  //return res;
-  }
+//  regConfig = (CLOCK_CH0_DIS | CLOCK_CH1_DIS | CLOCK_CH2_DIS | CLOCK_TBM | CLOCK_OSR | CLOCK_PWR);
+//  res = ADCwriteReg(CLOCK, regConfig);
+//  if (res == 0){
+//	  printf("Error disabling channels.\n\r");
+//	  //return res;
+//  }
 
   //write mode register to clear reset flag and make DRDY active low pulse
   regConfig = (MODE_REG_CRC_EN | MODE_RX_CRC_EN | MODE_CRC_TYPE | MODE_RESET_CLEAR |
