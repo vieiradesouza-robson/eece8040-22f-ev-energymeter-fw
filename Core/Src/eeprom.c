@@ -34,8 +34,8 @@ EepromOperations EEPROMgetLogMetaData(void)
 		return res;
 	}
 
-	for (uint16_t i = 0; i < EEPROM_MAX_LOG * 3; i += 3){
-		if (i == 0){
+	for (uint16_t i = 0; i < EEPROM_MAX_LOG * 3; i += 3) {
+		if (i == 0) {
 			logList[i/3].startAddress = 0;
 		} else {
 			logList[i/3].startAddress = logList[(i/3)-1].endAddress + 1;
@@ -43,7 +43,7 @@ EepromOperations EEPROMgetLogMetaData(void)
 
 		logList[i/3].endAddress = idBuffer[i] + (idBuffer[i+1] << 8) + (idBuffer[i+2] << 16);
 
-		if (logList[i/3].endAddress <= logList[i/3].startAddress){
+		if (logList[i/3].endAddress <= logList[i/3].startAddress) {
 			logList[i/3].size = 0;
 		} else {
 			logList[i/3].size = logList[i/3].endAddress - logList[i/3].startAddress + 1;
@@ -52,7 +52,7 @@ EepromOperations EEPROMgetLogMetaData(void)
 		logQty = logList[i/3].size == 0 ? logQty : logQty + 1;
 	}
 
-	for (uint16_t i = (3 * EEPROM_MAX_LOG); i < EEPROM_PAGESIZE; i ++){
+	for (uint16_t i = (3 * EEPROM_MAX_LOG); i < EEPROM_PAGESIZE; i ++) {
 		extraInfo[i-(3 * EEPROM_MAX_LOG)] = idBuffer[i];
 	}
 
@@ -150,7 +150,8 @@ EepromOperations EEPROMendLog(void)
 	return res;
 }
 
-uint8_t *EEPROMextraInfo(void){
+uint8_t *EEPROMextraInfo(void)
+{
 	return &extraInfo[0];
 }
 
@@ -166,10 +167,11 @@ EepromOperations EEPROMreadData(uint8_t* dataBuffer, uint32_t address, uint32_t 
 	return res;
 }
 
-void getLogInfo(uint32_t logId, uint32_t* startAddress, uint32_t* endAddress, uint32_t* size){
+void getLogInfo(uint32_t logId, uint32_t* startAddress, uint32_t* endAddress, uint32_t* size)
+{
 	// The EndLog routine shall be called before the getLogInfo function to make
 	// sure that the proper information has been updated
-    *startAddress = logList[logId].startAddress;
-    *endAddress = logList[logId].endAddress;
-    *size = logList[logId].size;
+	*startAddress = logList[logId].startAddress;
+	*endAddress = logList[logId].endAddress;
+	*size = logList[logId].size;
 }
