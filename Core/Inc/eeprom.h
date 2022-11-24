@@ -31,6 +31,8 @@ EepromOperations EEPROMgetLogMetaData(void);
 EepromOperations EEPROMstartLog(void);
 EepromOperations EEPROMlogData(uint32_t timestamp, float voltage, float current);
 EepromOperations EEPROMendLog(void);
+EepromOperations EEPROMreadData(uint8_t* dataBuffer, uint32_t address, uint32_t size);
 uint8_t *EEPROMextraInfo(void);
+void getLogInfo(uint32_t logId, uint32_t* startAddress, uint32_t* endAddress, uint32_t* size);
 
 #endif /* INC_EEPROM_H_ */

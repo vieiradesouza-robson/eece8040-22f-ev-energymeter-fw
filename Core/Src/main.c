@@ -25,6 +25,7 @@
 #include "integrity.h"
 #include "ui.h"
 #include "power.h"
+#include "eeprom.h"
 
 /* USER CODE END Includes */
 
@@ -115,7 +116,10 @@ int main(void)
 	/* USER CODE BEGIN 2 */
 	HAL_TIM_PWM_Start(&htim16, TIM_CHANNEL_1);
 	initPowerModule();
-	//TODO: Initialize ADC and Memory SPI (CS and other GPIO pins, and write initialization commands if needed).
+	EEPROM_SPI_INIT();
+	EEPROMstartLog();
+
+	//TODO: Change SPI configuration before using ADC and EEPROM SPI
 
 	/* USER CODE END 2 */
 
