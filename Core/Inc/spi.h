@@ -12,6 +12,7 @@
 
 #include "common.h"
 #include "stm32l4xx_hal.h"
+#include "stdbool.h"
 
 
 /************************** SPI Primitives **************************/
@@ -19,5 +20,6 @@
 void spiWrite(SPI_HandleTypeDef* handler, uint8_t* pData, uint16_t size, uint32_t tout);
 void spiRead(SPI_HandleTypeDef* handler, uint8_t* pData, uint16_t size, uint32_t tout);
 void modifySpiMode(SPI_HandleTypeDef* handler, uint8_t cpol, uint8_t cpha);
+bool isSpiModeConfigured(SPI_HandleTypeDef* handler, uint8_t cpol, uint8_t cpha);
 
 #endif /* INC_SPI_H_ */
