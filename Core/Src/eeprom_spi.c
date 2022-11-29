@@ -12,6 +12,7 @@
   */
 
 #include <eeprom_spi.h>
+#include "spi.h"
 
 extern SPI_HandleTypeDef	hspi1;
 SPI_HandleTypeDef * EEPROM_SPI;
@@ -40,6 +41,8 @@ void EEPROM_SPI_INIT(void)
   */
 EepromOperations EEPROM_SPI_WritePage(uint8_t* pBuffer, uint32_t WriteAddr, uint16_t NumByteToWrite)
 {
+	checkAndConfigureSpiMode(EEPROM_SPI, EEPROM_CPOL, EEPROM_CPHA);		//Check the SPI configuration before doing any Tx or Rx
+
 	while (EEPROM_SPI->State != HAL_SPI_STATE_READY) {
 
 	}
@@ -102,6 +105,8 @@ EepromOperations EEPROM_SPI_WriteBuffer(uint8_t* pBuffer, uint32_t WriteAddr, ui
 {
 	uint32_t NumOfPage = 0, NumOfSingle = 0, Addr = 0, count = 0, temp = 0;
 	uint32_t sEE_DataNum = 0;
+
+	checkAndConfigureSpiMode(EEPROM_SPI, EEPROM_CPOL, EEPROM_CPHA);		//Check the SPI configuration before doing any Tx or Rx
 
 	EepromOperations pageWriteStatus = EEPROM_STATUS_PENDING;
 
@@ -217,6 +222,8 @@ EepromOperations EEPROM_SPI_WriteBuffer(uint8_t* pBuffer, uint32_t WriteAddr, ui
   */
 EepromOperations EEPROM_SPI_ReadBuffer(uint8_t* pBuffer, uint32_t ReadAddr, uint16_t NumByteToRead)
 {
+	checkAndConfigureSpiMode(EEPROM_SPI, EEPROM_CPOL, EEPROM_CPHA);		//Check the SPI configuration before doing any Tx or Rx
+
 	while (EEPROM_SPI->State != HAL_SPI_STATE_READY) {
 		HAL_Delay(1);
 	}
@@ -256,6 +263,8 @@ EepromOperations EEPROM_SPI_ReadBuffer(uint8_t* pBuffer, uint32_t ReadAddr, uint
   */
 EepromOperations EEPROM_SPI_ReadID(uint8_t* pBuffer)
 {
+	checkAndConfigureSpiMode(EEPROM_SPI, EEPROM_CPOL, EEPROM_CPHA);		//Check the SPI configuration before doing any Tx or Rx
+
 	while (EEPROM_SPI->State != HAL_SPI_STATE_READY) {
 		HAL_Delay(1);
 	}
@@ -293,6 +302,8 @@ EepromOperations EEPROM_SPI_ReadID(uint8_t* pBuffer)
   */
 EepromOperations EEPROM_SPI_WriteID(uint8_t* pBuffer, uint32_t WriteAddr, uint16_t NumByteToWrite)
 {
+	checkAndConfigureSpiMode(EEPROM_SPI, EEPROM_CPOL, EEPROM_CPHA);		//Check the SPI configuration before doing any Tx or Rx
+
 	while (EEPROM_SPI->State != HAL_SPI_STATE_READY) {
 
 	}
@@ -352,6 +363,8 @@ uint8_t EEPROM_SendByte(uint8_t byte)
 {
 	uint8_t answerByte;
 
+	checkAndConfigureSpiMode(EEPROM_SPI, EEPROM_CPOL, EEPROM_CPHA);		//Check the SPI configuration before doing any Tx or Rx
+
 	/* Loop while DR register in not empty */
 	while (EEPROM_SPI->State == HAL_SPI_STATE_RESET) {
 		HAL_Delay(1);
@@ -382,6 +395,8 @@ uint8_t EEPROM_SendByte(uint8_t byte)
   */
 void sEE_WriteEnable(void)
 {
+	checkAndConfigureSpiMode(EEPROM_SPI, EEPROM_CPOL, EEPROM_CPHA);		//Check the SPI configuration before doing any Tx or Rx
+
 	// Select the EEPROM: Chip Select low
 	EEPROM_CS_LOW();
 
@@ -401,6 +416,8 @@ void sEE_WriteEnable(void)
   */
 void sEE_WriteDisable(void)
 {
+	checkAndConfigureSpiMode(EEPROM_SPI, EEPROM_CPOL, EEPROM_CPHA);		//Check the SPI configuration before doing any Tx or Rx
+
 	// Select the EEPROM: Chip Select low
 	EEPROM_CS_LOW();
 
@@ -422,6 +439,8 @@ void sEE_WriteDisable(void)
 void sEE_WriteStatusRegister(uint8_t regval)
 {
 	uint8_t command[2];
+
+	checkAndConfigureSpiMode(EEPROM_SPI, EEPROM_CPOL, EEPROM_CPHA);		//Check the SPI configuration before doing any Tx or Rx
 
 	command[0] = EEPROM_WRSR;
 	command[1] = regval;
@@ -452,6 +471,8 @@ void sEE_WriteStatusRegister(uint8_t regval)
   */
 uint8_t EEPROM_SPI_WaitStandbyState(void)
 {
+	checkAndConfigureSpiMode(EEPROM_SPI, EEPROM_CPOL, EEPROM_CPHA);		//Check the SPI configuration before doing any Tx or Rx
+
 	uint8_t sEEstatus[1] = { 0x00 };
 	uint8_t command[1] = { EEPROM_RDSR };
 
@@ -484,6 +505,8 @@ uint8_t EEPROM_SPI_WaitStandbyState(void)
  */
 void EEPROM_SPI_SendInstruction(uint8_t *instruction, uint8_t size)
 {
+	checkAndConfigureSpiMode(EEPROM_SPI, EEPROM_CPOL, EEPROM_CPHA);		//Check the SPI configuration before doing any Tx or Rx
+
 	while (EEPROM_SPI->State == HAL_SPI_STATE_RESET) {
 		HAL_Delay(1);
 	}
