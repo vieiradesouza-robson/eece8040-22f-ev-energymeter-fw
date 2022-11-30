@@ -152,7 +152,7 @@ static bool SD_RxDataBlock(BYTE *buff, UINT len)
 	} while((token == 0xFF) && Timer1);
 
 	/* invalid response */
-	if(token != 0xFE) return FALSE;
+	if(token != 0xFE) return false;
 
 	/* receive data */
 	do {
@@ -163,7 +163,7 @@ static bool SD_RxDataBlock(BYTE *buff, UINT len)
 	SPI_RxByte();
 	SPI_RxByte();
 
-	return TRUE;
+	return true;
 }
 
 /* transmit data block */
@@ -174,7 +174,7 @@ static bool SD_TxDataBlock(const uint8_t *buff, BYTE token)
 	uint8_t i = 0;
 
 	/* wait SD ready */
-	if (SD_ReadyWait() != 0xFF) return FALSE;
+	if (SD_ReadyWait() != 0xFF) return false;
 
 	/* transmit token */
 	SPI_TxByte(token);
@@ -201,9 +201,9 @@ static bool SD_TxDataBlock(const uint8_t *buff, BYTE token)
 	}
 
 	/* transmit 0x05 accepted */
-	if ((resp & 0x1F) == 0x05) return TRUE;
+	if ((resp & 0x1F) == 0x05) return true;
 
-	return FALSE;
+	return false;
 }
 #endif /* _USE_WRITE */
 

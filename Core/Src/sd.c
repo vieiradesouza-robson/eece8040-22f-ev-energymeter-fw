@@ -14,7 +14,7 @@
 FATFS fs;
 FATFS *pfs;
 FIL fil;
-bool flagFileOpen = FALSE;
+bool flagFileOpen = false;
 
 bool SDisFileOpen(void)
 {
@@ -63,7 +63,7 @@ FRESULT SDstartLog(void)
 	//writes the first line with the headers
 	f_puts("timestamp;voltage;current\n", &fil);
 
-	flagFileOpen = TRUE;
+	flagFileOpen = true;
 
 	return res;
 }
@@ -111,7 +111,7 @@ FRESULT SDendLog(void)
 		return res;
 	}
 
-	flagFileOpen = FALSE;
+	flagFileOpen = false;
 
 	return res;
 }

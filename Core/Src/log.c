@@ -9,3 +9,9 @@
   */
 
 #include "log.h"
+
+logElementTypedef logBuffer [HS_BUFFER_SIZE];
+
+static bool initLog(void){
+	return true;
+}
