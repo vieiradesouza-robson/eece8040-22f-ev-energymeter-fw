@@ -77,7 +77,7 @@ void spiRead(SPI_HandleTypeDef* handler, uint8_t* pData, uint16_t size, uint32_t
  *
  * Returns         : None
  */
-void modifySpiMode(SPI_HandleTypeDef* handler, uint8_t cpol, uint8_t cpha)
+static void modifySpiMode(SPI_HandleTypeDef* handler, uint8_t cpol, uint8_t cpha)
 {
 	/* SPI parameter configuration*/
 
@@ -88,4 +88,42 @@ void modifySpiMode(SPI_HandleTypeDef* handler, uint8_t cpol, uint8_t cpha)
 		goToErrorMode(SPI_MODE_CONFG_ERROR);
 	}
 
+}
+
+/* Function      : isSpiModeConfigured
+ *
+ * Description   : Function to check if the SPI mode is the desired.
+ *
+ * Parameters    :  handler pointer to a SPI_HandleTypeDef structure that contains
+ *               the configuration information for SPI module.error code.
+ *               cpol clock polarity.
+ *               cpha clock phase.
+ *
+ * Returns         : True if the cpol and cpha matches, false otherwise.
+ */
+static bool isSpiModeConfigured(SPI_HandleTypeDef* handler, uint8_t cpol, uint8_t cpha)
+{
+	if(handler->Init.CLKPolarity != cpol || handler->Init.CLKPhase != cpha) {
+		return false;
+	}
+
+	return true;
+}
+
+/* Function      : checkAndConfigureSpiMode
+ *
+ * Description   : Function to modify the SPI mode when not configured.
+ *
+ * Parameters    :  handler pointer to a SPI_HandleTypeDef structure that contains
+ *               the configuration information for SPI module.error code.
+ *               cpol clock polarity.
+ *               cpha clock phase.
+ *
+ * Returns         : None
+ */
+void checkAndConfigureSpiMode(SPI_HandleTypeDef* handler, uint8_t cpol, uint8_t cpha)
+{
+	if(!isSpiModeConfigured(handler,cpol,cpha)) {
+		modifySpiMode(handler,cpol,cpha);
+	}
 }

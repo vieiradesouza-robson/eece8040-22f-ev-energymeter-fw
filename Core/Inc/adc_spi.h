@@ -104,6 +104,9 @@
 #define GAIN_PGA_GAIN_64	6
 #define GAIN_PGA_GAIN_128	7
 
+#define ADC_CPOL			(SPI_POLARITY_LOW)
+#define ADC_CPHA			(SPI_PHASE_2EDGE)
+
 uint8_t *ADCrawChannels(void);
 uint8_t ADCwriteReg(uint8_t reg, uint32_t data);
 uint8_t ADCinit(SPI_HandleTypeDef * hspi);

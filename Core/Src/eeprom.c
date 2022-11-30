@@ -10,6 +10,7 @@
   */
 
 #include "eeprom.h"
+#include "string.h"
 
 uint8_t logBuffer[EEPROM_PAGESIZE] = {0x00};
 uint16_t dataIndex = 0;
@@ -23,17 +24,18 @@ uint32_t logQty = 0;
 
 uint8_t extraInfo[EEPROM_PARAMETERS_SIZE];
 
-EepromOperations EEPROMgetLogMetaData(void){
+EepromOperations EEPROMgetLogMetaData(void)
+{
 	EepromOperations res = EEPROM_STATUS_COMPLETE;
 
 	res = EEPROM_SPI_ReadID(idBuffer);
 
-	if (res != EEPROM_STATUS_COMPLETE){
+	if (res != EEPROM_STATUS_COMPLETE) {
 		return res;
 	}
 
-	for (uint8_t i = 0; i < EEPROM_MAX_LOG * 3; i += 3){
-		if (i == 0){
+	for (uint16_t i = 0; i < EEPROM_MAX_LOG * 3; i += 3) {
+		if (i == 0) {
 			logList[i/3].startAddress = 0;
 		} else {
 			logList[i/3].startAddress = logList[(i/3)-1].endAddress + 1;
@@ -41,28 +43,37 @@ EepromOperations EEPROMgetLogMetaData(void){
 
 		logList[i/3].endAddress = idBuffer[i] + (idBuffer[i+1] << 8) + (idBuffer[i+2] << 16);
 
-		if (logList[i/3].endAddress < logList[i/3].startAddress){
+		if (logList[i/3].endAddress <= logList[i/3].startAddress) {
 			logList[i/3].size = 0;
 		} else {
 			logList[i/3].size = logList[i/3].endAddress - logList[i/3].startAddress + 1;
 		}
 
-		logQty = logList[i/3].size = 0 ? logQty : logQty + 1;
+		logQty = logList[i/3].size == 0 ? logQty : logQty + 1;
 	}
 
-	for (uint8_t i = EEPROM_MAX_LOG; i < EEPROM_PAGESIZE; i ++){
-		extraInfo[i-EEPROM_MAX_LOG] = idBuffer[i];
+	for (uint16_t i = (3 * EEPROM_MAX_LOG); i < EEPROM_PAGESIZE; i ++) {
+		extraInfo[i-(3 * EEPROM_MAX_LOG)] = idBuffer[i];
 	}
 
 	return res;
 }
 
-EepromOperations EEPROMstartLog(void){
+static void initIdPage(void)
+{
+	memset(idBuffer, 0x00, sizeof(idBuffer));
+	EEPROM_SPI_WriteID(idBuffer, 0x00000000, sizeof(idBuffer)/sizeof(uint8_t));
+}
+
+EepromOperations EEPROMstartLog(void)
+{
 	EepromOperations res = EEPROM_STATUS_COMPLETE;
+
+	initIdPage();
 
 	res = EEPROMgetLogMetaData();
 
-	if (res != EEPROM_STATUS_COMPLETE){
+	if (res != EEPROM_STATUS_COMPLETE) {
 		return res;
 	}
 
@@ -75,7 +86,8 @@ EepromOperations EEPROMstartLog(void){
 	return res;
 }
 
-EepromOperations EEPROMlogData(uint32_t timestamp, float voltage, float current){
+EepromOperations EEPROMlogData(uint32_t timestamp, float voltage, float current)
+{
 	uint16_t voltage_int, current_int;
 	EepromOperations res = EEPROM_STATUS_COMPLETE;
 
@@ -99,7 +111,7 @@ EepromOperations EEPROMlogData(uint32_t timestamp, float voltage, float current)
 	logBuffer[dataIndex] = current_int;
 	dataIndex ++;
 
-	if ((writeAddr + dataIndex)/EEPROM_PAGESIZE >= 1){
+	if ((writeAddr + dataIndex)/EEPROM_PAGESIZE >= 1) {
 		res = EEPROM_SPI_WriteBuffer(logBuffer, writeAddr, dataIndex);
 		writeAddr = writeAddr + dataIndex;
 		writeAddr = writeAddr <= EEPROM_MAX_ADDRESS ? writeAddr : 0;
@@ -109,12 +121,13 @@ EepromOperations EEPROMlogData(uint32_t timestamp, float voltage, float current)
 	return res;
 }
 
-EepromOperations EEPROMendLog(void){
+EepromOperations EEPROMendLog(void)
+{
 	EepromOperations res = EEPROM_STATUS_COMPLETE;
 
 	res = EEPROM_SPI_WriteBuffer(logBuffer, writeAddr, dataIndex);
 
-	if(res != EEPROM_STATUS_COMPLETE){
+	if(res != EEPROM_STATUS_COMPLETE) {
 		return res;
 	}
 
@@ -123,7 +136,12 @@ EepromOperations EEPROMendLog(void){
 	dataIndex = 0;
 
 	logList[logQty].endAddress = writeAddr - 1;
-	logList[logQty].size = logList[logQty].endAddress - logList[logQty].startAddress + 1;
+	if(logList[logQty].startAddress < logList[logQty].endAddress) {
+		logList[logQty].size = logList[logQty].endAddress - logList[logQty].startAddress + 1;
+	} else {
+		//To account for the case when writeAddr is greater than EEPROM_MAX_ADDRESS and it goes back to 0
+		logList[logQty].size = logList[logQty].endAddress - (logList[logQty].startAddress + EEPROM_MAX_ADDRESS)%EEPROM_MAX_ADDRESS +1;
+	}
 
 	res = EEPROM_SPI_WriteID((uint8_t*) &logList[logQty].endAddress, logQty * 3, 3);
 
@@ -132,6 +150,28 @@ EepromOperations EEPROMendLog(void){
 	return res;
 }
 
-uint8_t *EEPROMextraInfo(void){
-	return (uint8_t *)&extraInfo;
+uint8_t *EEPROMextraInfo(void)
+{
+	return &extraInfo[0];
+}
+
+EepromOperations EEPROMreadData(uint8_t* dataBuffer, uint32_t address, uint32_t size)
+{
+	EepromOperations res = EEPROM_STATUS_COMPLETE;
+	// The EndLog routine shall be called before the reading function to make
+	// sure that the information has been stored in the EEPROM
+
+	//Read from memory
+	EEPROM_SPI_ReadBuffer(dataBuffer, address, size);
+
+	return res;
+}
+
+void getLogInfo(uint32_t logId, uint32_t* startAddress, uint32_t* endAddress, uint32_t* size)
+{
+	// The EndLog routine shall be called before the getLogInfo function to make
+	// sure that the proper information has been updated
+	*startAddress = logList[logId].startAddress;
+	*endAddress = logList[logId].endAddress;
+	*size = logList[logId].size;
 }
