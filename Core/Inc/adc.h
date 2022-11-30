@@ -19,3 +19,6 @@
 #define HV_CURRENT_CH				1
 #define HV_VOLTAGE_CH				2
 #define ADC_MAX_RANGE				2.4
+
+double *getADCConvertedData();
+double getADCSingleChannel(uint8_t channel);

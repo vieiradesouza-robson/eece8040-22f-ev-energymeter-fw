@@ -69,8 +69,6 @@ EepromOperations EEPROMstartLog(void)
 {
 	EepromOperations res = EEPROM_STATUS_COMPLETE;
 
-	initIdPage();
-
 	res = EEPROMgetLogMetaData();
 
 	if (res != EEPROM_STATUS_COMPLETE) {

@@ -33,7 +33,7 @@ int32_t convert24bitTo32bit(uint8_t *byteArray){
 	return convertedNumber;
 }
 
-double *getADCConvertedData(){
+double *getADCConvertedData(void){
 	int32_t rawData32bits[3];
 
 	for (uint8_t i=0; i<3; i++){
