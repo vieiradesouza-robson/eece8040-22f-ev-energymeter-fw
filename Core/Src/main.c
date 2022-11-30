@@ -57,7 +57,8 @@ TIM_HandleTypeDef htim16;
 UART_HandleTypeDef huart2;
 
 /* USER CODE BEGIN PV */
-
+uint8_t *(ADCData[ADC_WORD_SIZE/8 * 5]);
+uint8_t ADCnewData = 0;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -564,6 +565,12 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
+void HAL_GPIO_EXTI_Callback(uint16_t interruptPin){
+	if (interruptPin == ADC_DRDY_Pin){
+		*ADCData = ADCrawChannels();
+		ADCnewData++;
+	}
+}
 
 /* USER CODE END 4 */
 

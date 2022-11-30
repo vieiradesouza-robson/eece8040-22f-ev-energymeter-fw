@@ -11,11 +11,12 @@
   */
 
 #include "adc_spi.h"
-
+#include <math.h>
 
 SPI_HandleTypeDef * ADC_SPI = NULL;
 uint8_t ADCrawData[ADC_WORD_SIZE/8 * 5];
 uint8_t ADCdummy[ADC_WORD_SIZE/8 * 5];
+uint8_t ADCgain[3];
 
 void ADC_CS_ENABLE(void)
 {
@@ -27,8 +28,11 @@ void ADC_CS_DISABLE(void)
 	HAL_GPIO_WritePin(ADC_CS_GPIO_Port, ADC_CS_Pin, GPIO_PIN_SET);
 }
 
-uint8_t *ADCrawChannels(void)
-{
+uint8_t *ADCrawChannelsPointer(void){
+	return (uint8_t *)&ADCrawData;
+}
+
+uint8_t *ADCrawChannels(void) {
 
 	while (ADC_SPI->State != HAL_SPI_STATE_READY) {
 		HAL_Delay(1);
@@ -48,9 +52,10 @@ uint8_t *ADCrawChannels(void)
 uint8_t ADCwriteReg(uint8_t reg, uint32_t data)
 {
 
-	// Make command word using syntax found in data sheet
-	uint8_t commandWord[ADC_WORD_SIZE/8 * 5];
-	uint8_t responseArr[ADC_WORD_SIZE/8 * 5];
+  // Make command and expected response word using syntax found in data sheet
+  uint8_t commandWord[ADC_WORD_SIZE/8 * 5];
+  uint8_t responseWord[ADC_WORD_SIZE/8 * 5];
+  uint8_t responseArr[ADC_WORD_SIZE/8 * 5];
 
 	commandWord[0] = (WREG >> 8) + (reg >> 1);
 	commandWord[1] = reg << 7;
@@ -64,12 +69,9 @@ uint8_t ADCwriteReg(uint8_t reg, uint32_t data)
 		commandWord[i] = DUMMY;
 	}
 
-//  responseWord[0] = (WREG_RES >> 8) + (reg >> 1);
-//  responseWord[1] = reg << 7;
-//  responseWord[2] = 0;
-
-	printf("Command = %x %x %x\n\r", commandWord[0], commandWord[1], commandWord[2]);
-	printf("Reg data = %x %x %x\n\r", commandWord[3], commandWord[4], commandWord[5]);
+  responseWord[0] = (WREG_RES >> 8) + (reg >> 1);
+  responseWord[1] = reg << 7;
+  responseWord[2] = 0;
 
 	//clear the ADC SPI buffer
 	ADC_CS_ENABLE();
@@ -123,21 +125,22 @@ uint8_t ADCwriteReg(uint8_t reg, uint32_t data)
 
 	printf("Response array = %x %x %x\n\r", responseArr[0], responseArr[1], responseArr[2]);
 
-//  if ((responseWord[0] == responseArr[0]) && (responseWord[1] == responseArr[1]) && (responseWord[2] == responseArr[2])) {
-//    return 1;
-//  } else {
-//
-//    return 0;
-//  }
-	return 1;
+  if ((responseWord[0] == responseArr[0]) && (responseWord[1] == responseArr[1]) && (responseWord[2] == responseArr[2])) {
+    return HAL_OK;
+  } else {
+    return HAL_ERROR;
+  }
 }
 
 uint8_t ADCsetGain(uint8_t log2GainCH0, uint8_t log2GainCH1, uint8_t log2GainCH2)
 {
+  uint32_t gainData = 0x00000000 + ((0x07 & log2GainCH0)<<16) + ((0x07 & log2GainCH1) << 20) + ((0x07 & log2GainCH2) << 24);
 
-	uint32_t gainData = 0x00000000 + ((0x07 & log2GainCH0)<<16) + ((0x07 & log2GainCH1) << 20) + ((0x07 & log2GainCH2) << 24);
-	return ADCwriteReg(GAIN, gainData);
+  ADCgain[0] = pow(2, (double)log2GainCH0);
+  ADCgain[1] = pow(2, (double)log2GainCH1);
+  ADCgain[2] = pow(2, (double)log2GainCH2);
 
+  return ADCwriteReg(GAIN, gainData);
 }
 
 uint8_t ADCinit(SPI_HandleTypeDef * hspi)
@@ -151,35 +154,26 @@ uint8_t ADCinit(SPI_HandleTypeDef * hspi)
 		ADCdummy[i] = DUMMY;
 	}
 
-	//disable all channels to enable short frames during configuration
-//  regConfig = (CLOCK_CH0_DIS | CLOCK_CH1_DIS | CLOCK_CH2_DIS | CLOCK_TBM | CLOCK_OSR | CLOCK_PWR);
-//  res = ADCwriteReg(CLOCK, regConfig);
-//  if (res == 0){
-//	  printf("Error disabling channels.\n\r");
-//	  //return res;
-//  }
+  //write mode register to clear reset flag and make DRDY active low pulse
+  regConfig = (MODE_REG_CRC_EN | MODE_RX_CRC_EN | MODE_CRC_TYPE | MODE_RESET_CLEAR |
+		  	   MODE_WLENGTH | MODE_TIMEOUT | MODE_DRDY_SEL | MODE_DRDY_HIZ | MODE_DRDY_FMT_PULSE);
+  res = ADCwriteReg(MODE, regConfig);
+  if (res == HAL_ERROR){
+	  printf("Error setting MODE register.\n\r");
+	  return res;
+  }
 
-	//write mode register to clear reset flag and make DRDY active low pulse
-	regConfig = (MODE_REG_CRC_EN | MODE_RX_CRC_EN | MODE_CRC_TYPE | MODE_RESET_CLEAR |
-				 MODE_WLENGTH | MODE_TIMEOUT | MODE_DRDY_SEL | MODE_DRDY_HIZ | MODE_DRDY_FMT_PULSE);
-	res = ADCwriteReg(MODE, regConfig);
-	if (res == 0) {
-		printf("Error setting MODE register.\n\r");
-		//return res;
-	}
+  //set CH0 gain to 32, CH1 to 128 and CH2 to 128
+  res = ADCsetGain(GAIN_PGA_GAIN_32, GAIN_PGA_GAIN_128, GAIN_PGA_GAIN_128);
+  if (res == HAL_ERROR){
+	  printf("Error setting GAIN register.\n\r");
+	  return res;
+  }
 
-	//set CH0 gain to 32, CH1 to 128 and CH2 to 128
-	regConfig = (GAIN_PGA_GAIN0_32 | GAIN_PGA_GAIN1_128 | GAIN_PGA_GAIN2_128);
-	res = ADCwriteReg(GAIN, regConfig);
-	if (res == 0) {
-		printf("Error setting GAIN register.\n\r");
-		//return res;
-	}
+  //set OSR to 16256
+  regConfig = (CLOCK_CH0_EN | CLOCK_CH1_EN | CLOCK_CH2_EN | CLOCK_TBM | CLOCK_OSR_16256 | CLOCK_PWR);
+  res = ADCwriteReg(CLOCK, regConfig);
 
-	//enable all channels again and set OSR to 16256
-	regConfig = (CLOCK_CH0_EN | CLOCK_CH1_EN | CLOCK_CH2_EN | CLOCK_TBM | CLOCK_OSR_16256 | CLOCK_PWR);
-	res = ADCwriteReg(CLOCK, regConfig);
-
-	return res;
+  return res;
 }
 
