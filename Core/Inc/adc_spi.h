@@ -11,11 +11,16 @@
 #ifndef INC_ADC_SPI_H_
 #define INC_ADC_SPI_H_
 
+#include "common.h"
 #include "main.h"
 #include <stdio.h>
+#include "spi.h"
 
 #define ADC_WORD_SIZE	24
 #define ADC_TIMEOUT		100
+
+#define ADC_CPOL			(SPI_POLARITY_LOW)
+#define ADC_CPHA			(SPI_PHASE_2EDGE)
 
 //commands mapping
 #define DUMMY		0x00

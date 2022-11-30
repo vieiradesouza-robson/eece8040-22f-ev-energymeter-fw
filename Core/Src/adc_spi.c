@@ -34,6 +34,8 @@ uint8_t *ADCrawChannelsPointer(void){
 
 uint8_t *ADCrawChannels(void) {
 
+	checkAndConfigureSpiMode(ADC_SPI, ADC_CPOL, ADC_CPHA);
+
 	while (ADC_SPI->State != HAL_SPI_STATE_READY) {
 		HAL_Delay(1);
 	}
@@ -72,6 +74,9 @@ uint8_t ADCwriteReg(uint8_t reg, uint32_t data)
   responseWord[0] = (WREG_RES >> 8) + (reg >> 1);
   responseWord[1] = reg << 7;
   responseWord[2] = 0;
+
+    //makes sure SPI is configured for CPOL = 0 and CPHA = 1
+  	checkAndConfigureSpiMode(ADC_SPI, ADC_CPOL, ADC_CPHA);
 
 	//clear the ADC SPI buffer
 	ADC_CS_ENABLE();

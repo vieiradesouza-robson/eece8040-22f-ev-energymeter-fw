@@ -68,7 +68,7 @@ FRESULT SDstartLog(void)
 	return res;
 }
 
-int16_t SDlogData(uint32_t timestamp, float voltage, float current)
+int16_t SDlogData(uint32_t timestamp, double voltage, double current)
 {
 	char str[27];
 	uint32_t hour, minute, second, milisecond;

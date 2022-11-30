@@ -86,7 +86,7 @@ EepromOperations EEPROMstartLog(void)
 	return res;
 }
 
-EepromOperations EEPROMlogData(uint32_t timestamp, float voltage, float current)
+EepromOperations EEPROMlogData(uint32_t timestamp, double voltage, double current)
 {
 	uint16_t voltage_int, current_int;
 	EepromOperations res = EEPROM_STATUS_COMPLETE;

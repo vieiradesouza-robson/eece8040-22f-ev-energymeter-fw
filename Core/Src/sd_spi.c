@@ -100,6 +100,8 @@ static void SD_PowerOn(void)
 		SPI_TxByte(0xFF);
 	}
 
+	checkAndConfigureSpiMode(HSPI_SDCARD, SD_CPOL, SD_CPHA);		//Check the SPI configuration before doing any Tx or Rx
+
 	/* slave select */
 	SELECT();
 
@@ -258,6 +260,8 @@ DSTATUS SD_disk_initialize(BYTE drv)
 	/* power on */
 	SD_PowerOn();
 
+	checkAndConfigureSpiMode(HSPI_SDCARD, SD_CPOL, SD_CPHA);		//Check the SPI configuration before doing any Tx or Rx
+
 	/* slave select */
 	SELECT();
 
@@ -348,6 +352,8 @@ DRESULT SD_disk_read(BYTE pdrv, BYTE* buff, DWORD sector, UINT count)
 	/* convert to byte address */
 	if (!(CardType & CT_SD2)) sector *= 512;
 
+	checkAndConfigureSpiMode(HSPI_SDCARD, SD_CPOL, SD_CPHA);		//Check the SPI configuration before doing any Tx or Rx
+
 	SELECT();
 
 	if (count == 1) {
@@ -388,6 +394,8 @@ DRESULT SD_disk_write(BYTE pdrv, const BYTE* buff, DWORD sector, UINT count)
 
 	/* convert to byte address */
 	if (!(CardType & CT_SD2)) sector *= 512;
+
+	checkAndConfigureSpiMode(HSPI_SDCARD, SD_CPOL, SD_CPHA);		//Check the SPI configuration before doing any Tx or Rx
 
 	SELECT();
 
@@ -454,6 +462,8 @@ DRESULT SD_disk_ioctl(BYTE drv, BYTE ctrl, void *buff)
 	} else {
 		/* no disk */
 		if (Stat & STA_NOINIT) return RES_NOTRDY;
+
+		checkAndConfigureSpiMode(HSPI_SDCARD, SD_CPOL, SD_CPHA);		//Check the SPI configuration before doing any Tx or Rx
 
 		SELECT();
 
