@@ -29,7 +29,7 @@ typedef struct {
 
 EepromOperations EEPROMgetLogMetaData(void);
 EepromOperations EEPROMstartLog(void);
-EepromOperations EEPROMlogData(uint32_t timestamp, float voltage, float current);
+EepromOperations EEPROMlogData(uint32_t timestamp, double voltage, double current);
 EepromOperations EEPROMendLog(void);
 EepromOperations EEPROMreadData(uint8_t* dataBuffer, uint32_t address, uint32_t size);
 uint8_t *EEPROMextraInfo(void);

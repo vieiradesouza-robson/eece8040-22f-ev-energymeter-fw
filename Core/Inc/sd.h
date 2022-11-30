@@ -17,15 +17,12 @@
 #include "ff.h"
 #include "sd_spi.h"
 
-#define TRUE  1
-#define FALSE 0
-#define bool BYTE
 #define MAXFILES 100
 
 bool SDisFileOpen(void);
 uint32_t SDfreeSpace(void);
 FRESULT SDstartLog(void);
-int16_t SDlogData(uint32_t timestamp, float voltage, float current);
+int16_t SDlogData(uint32_t timestamp, double voltage, double current);
 FRESULT SDendLog(void);
 
 #endif /* INC_SD_H_ */

@@ -16,10 +16,8 @@
 #include "diskio.h"
 #include "main.h"
 #include "fatfs.h"
-
-#define TRUE  1
-#define FALSE 0
-#define bool BYTE
+#include "spi.h"
+#include "stdbool.h"
 
 #define SD_CPOL			(SPI_POLARITY_LOW)
 #define SD_CPHA			(SPI_PHASE_1EDGE)
