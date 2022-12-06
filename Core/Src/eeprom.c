@@ -109,7 +109,7 @@ EepromOperations EEPROMlogData(uint32_t timestamp, double voltage, double curren
 	logBuffer[dataIndex] = current_int;
 	dataIndex ++;
 
-	if ((writeAddr + dataIndex)/EEPROM_PAGESIZE >= 1) {
+	if (((writeAddr % EEPROM_PAGESIZE) + dataIndex)/EEPROM_PAGESIZE >= 1) {
 
 		printf("[eeprom.c]Writing new page to eeprom address: %lu\n\r", writeAddr);
 

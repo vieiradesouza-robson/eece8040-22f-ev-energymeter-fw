@@ -42,6 +42,12 @@ uint8_t *ADCrawChannels(void) {
 
 	ADC_CS_ENABLE();
 
+	HAL_SPI_Transmit(ADC_SPI, ADCdummy, ADC_WORD_SIZE/8 * 5, ADC_TIMEOUT);
+
+	ADC_CS_DISABLE();
+
+	ADC_CS_ENABLE();
+
 	while (HAL_SPI_TransmitReceive(ADC_SPI, (uint8_t *)&ADCdummy, (uint8_t *)&ADCrawData, (ADC_WORD_SIZE/8) * 5, ADC_TIMEOUT) == HAL_BUSY) {
 		HAL_Delay(1);
 	}
@@ -167,7 +173,7 @@ uint8_t ADCinit(SPI_HandleTypeDef * hspi)
   }
 
   //set CH0 gain to 32, CH1 to 128 and CH2 to 128
-  res = ADCsetGain(GAIN_PGA_GAIN_32, GAIN_PGA_GAIN_1, GAIN_PGA_GAIN_128);
+  res = ADCsetGain(GAIN_PGA_GAIN_32, GAIN_PGA_GAIN_1, GAIN_PGA_GAIN_32);
   if (res == HAL_ERROR){
 	  printf("[adc_spi.c]Error setting GAIN register.\n\r");
 	  return res;

@@ -39,7 +39,7 @@ double *getADCConvertedData(void){
 	for (uint8_t i=0; i<3; i++){
 		rawData32bits[i] = convert24bitTo32bit(&(ADCrawData[(i*3)+3]));
 
-		ADCconvertedChannels[i] = ((double)rawData32bits[i] * ADC_MAX_RANGE)/(ADCgain[i] * ADC_DEFAULT_MAX_RAW);
+		ADCconvertedChannels[i] = -1 * ((double)rawData32bits[i] * ADC_MAX_RANGE)/(ADCgain[i] * ADC_DEFAULT_MAX_RAW);
 	}
 
 	ADCconvertedChannels[SUPPLY_CURRENT_CH] = ADCconvertedChannels[SUPPLY_CURRENT_CH]/SUPPLY_I_SHUNT_RESISTANCE;

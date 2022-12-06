@@ -167,7 +167,6 @@ void dataLogRoutine(uint32_t timestamp, uint8_t *ADCnewData){
 
 	if (*ADCnewData){
 
-
 		ADCConvertedData = getADCConvertedData();
 
 		if (!isLogging && ADCConvertedData[HV_VOLTAGE_CH] >= LOG_HV_VOLTAGE_THRSH){

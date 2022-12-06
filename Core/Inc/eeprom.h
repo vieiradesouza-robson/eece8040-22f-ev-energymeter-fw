@@ -15,6 +15,7 @@
 #include "common.h"
 #include "main.h"
 #include "eeprom_spi.h"
+#include <stdio.h>
 
 #define EEPROM_MAX_LOG			100 //maximum logs that will be stored in the EEPROM
 
@@ -34,5 +35,6 @@ EepromOperations EEPROMendLog(void);
 EepromOperations EEPROMreadData(uint8_t* dataBuffer, uint32_t address, uint32_t size);
 uint8_t *EEPROMextraInfo(void);
 void getLogInfo(uint32_t logId, uint32_t* startAddress, uint32_t* endAddress, uint32_t* size);
+void initIdPage(void);
 
 #endif /* INC_EEPROM_H_ */
