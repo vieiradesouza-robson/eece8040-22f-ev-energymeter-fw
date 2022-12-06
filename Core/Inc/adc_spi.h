@@ -101,6 +101,7 @@
 #define GAIN_PGA_GAIN0_1	0X000000
 
 //GAIN register used values
+#define GAIN_PGA_GAIN_1		0
 #define GAIN_PGA_GAIN_2		1
 #define GAIN_PGA_GAIN_4		2
 #define GAIN_PGA_GAIN_8		3

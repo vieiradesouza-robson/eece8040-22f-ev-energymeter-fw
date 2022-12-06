@@ -44,7 +44,7 @@ EepromOperations EEPROM_SPI_WritePage(uint8_t* pBuffer, uint32_t WriteAddr, uint
 	checkAndConfigureSpiMode(EEPROM_SPI, EEPROM_CPOL, EEPROM_CPHA);		//Check the SPI configuration before doing any Tx or Rx
 
 	while (EEPROM_SPI->State != HAL_SPI_STATE_READY) {
-
+		HAL_Delay(1);
 	}
 
 	HAL_StatusTypeDef spiTransmitStatus;

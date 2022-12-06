@@ -21,7 +21,7 @@
  */
 void printWelcomeMessage( void )
 {
-	printf("\n\n\rWelcome to the FSAE Electric Energy Meter Demo.");
+	printf("\n\n\rWelcome to the FSAE Electric Energy Meter Demo.\n\r");
 }
 
 /* Function      : printErrorMessage

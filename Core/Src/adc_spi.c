@@ -128,8 +128,6 @@ uint8_t ADCwriteReg(uint8_t reg, uint32_t data)
 
 	ADC_CS_DISABLE();
 
-	printf("Response array = %x %x %x\n\r", responseArr[0], responseArr[1], responseArr[2]);
-
   if ((responseWord[0] == responseArr[0]) && (responseWord[1] == responseArr[1]) && (responseWord[2] == responseArr[2])) {
     return HAL_OK;
   } else {
@@ -164,21 +162,26 @@ uint8_t ADCinit(SPI_HandleTypeDef * hspi)
 		  	   MODE_WLENGTH | MODE_TIMEOUT | MODE_DRDY_SEL | MODE_DRDY_HIZ | MODE_DRDY_FMT_PULSE);
   res = ADCwriteReg(MODE, regConfig);
   if (res == HAL_ERROR){
-	  printf("Error setting MODE register.\n\r");
+	  printf("[adc_spi.c]Error setting MODE register.\n\r");
 	  return res;
   }
 
   //set CH0 gain to 32, CH1 to 128 and CH2 to 128
-  res = ADCsetGain(GAIN_PGA_GAIN_32, GAIN_PGA_GAIN_128, GAIN_PGA_GAIN_128);
+  res = ADCsetGain(GAIN_PGA_GAIN_32, GAIN_PGA_GAIN_1, GAIN_PGA_GAIN_32);
   if (res == HAL_ERROR){
-	  printf("Error setting GAIN register.\n\r");
+	  printf("[adc_spi.c]Error setting GAIN register.\n\r");
 	  return res;
   }
 
   //set OSR to 16256
   regConfig = (CLOCK_CH0_EN | CLOCK_CH1_EN | CLOCK_CH2_EN | CLOCK_TBM | CLOCK_OSR_16256 | CLOCK_PWR);
   res = ADCwriteReg(CLOCK, regConfig);
+  if (res == HAL_ERROR){
+	  printf("[adc_spi.c]Error setting OSR register.\n\r");
+	  return res;
+  }
 
+  printf("[adc_spi.c]ADC initialized OK.\n\r");
   return res;
 }
 

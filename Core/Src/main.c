@@ -27,6 +27,7 @@
 #include "power.h"
 #include "eeprom.h"
 #include "adc_spi.h"
+#include "log.h"
 
 /* USER CODE END Includes */
 
@@ -57,8 +58,11 @@ TIM_HandleTypeDef htim16;
 UART_HandleTypeDef huart2;
 
 /* USER CODE BEGIN PV */
-uint8_t *(ADCData[ADC_WORD_SIZE/8 * 5]);
 uint8_t ADCnewData = 0;
+uint8_t runLogRoutine = 0;
+uint32_t timestamp;
+uint32_t nextLog = 0;
+#define LOG_INTERVAL	100;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -119,16 +123,14 @@ int main(void)
 	HAL_TIM_PWM_Start(&htim16, TIM_CHANNEL_1);
 	initPowerModule();
 	EEPROM_SPI_INIT();
-	EEPROMstartLog();
-	//TODO: Reconfigure SPI before using EEPROM or ADC
+
 	while(HAL_GPIO_ReadPin(ADC_DRDY_GPIO_Port, ADC_DRDY_Pin) == GPIO_PIN_SET) {}
 
 	if (ADCinit(&hspi1) != HAL_OK) {
 		printf("Error initializing ADC.\n\r");
 	}
-	HAL_NVIC_EnableIRQ(EXTI3_IRQn);
 
-	//TODO: Change SPI configuration before using ADC and EEPROM SPI
+	HAL_NVIC_EnableIRQ(EXTI3_IRQn);
 
 	/* USER CODE END 2 */
 
@@ -141,6 +143,14 @@ int main(void)
 
 		/* USER CODE BEGIN 3 */
 		houseKeep();
+
+		if (ADCnewData >= 1){
+			ADCrawChannels();
+			runLogRoutine = 1;
+			ADCnewData = 0;
+		}
+
+		dataLogRoutine(timestamp, &runLogRoutine);
 
 	}
 	/* USER CODE END 3 */
@@ -564,7 +574,7 @@ static void MX_GPIO_Init(void)
 /* USER CODE BEGIN 4 */
 void HAL_GPIO_EXTI_Callback(uint16_t interruptPin){
 	if (interruptPin == ADC_DRDY_Pin){
-		*ADCData = ADCrawChannels();
+		timestamp = HAL_GetTick();
 		ADCnewData++;
 	}
 }
