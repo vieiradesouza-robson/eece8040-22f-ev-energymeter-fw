@@ -146,7 +146,6 @@ int main(void)
 
 		if (ADCnewData >= 1){
 			ADCrawChannels();
-			timestamp = HAL_GetTick();
 			runLogRoutine = 1;
 			ADCnewData = 0;
 		}

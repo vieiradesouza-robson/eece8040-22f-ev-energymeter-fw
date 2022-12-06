@@ -42,12 +42,6 @@ uint8_t *ADCrawChannels(void) {
 
 	ADC_CS_ENABLE();
 
-	HAL_SPI_Transmit(ADC_SPI, ADCdummy, ADC_WORD_SIZE/8 * 5, ADC_TIMEOUT);
-
-	ADC_CS_DISABLE();
-
-	ADC_CS_ENABLE();
-
 	while (HAL_SPI_TransmitReceive(ADC_SPI, (uint8_t *)&ADCdummy, (uint8_t *)&ADCrawData, (ADC_WORD_SIZE/8) * 5, ADC_TIMEOUT) == HAL_BUSY) {
 		HAL_Delay(1);
 	}
