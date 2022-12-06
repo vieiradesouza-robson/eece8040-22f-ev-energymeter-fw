@@ -11,11 +11,12 @@
 #include "log.h"
 
 logElementTypedef dataLogBuffer [HS_BUFFER_SIZE];
-uint8_t bufferHead = 0;
-uint8_t bufferTail = 0;
+uint16_t bufferHead = 0;
+uint16_t bufferTail = 0;
 bool isLogging = false;
 uint32_t samplesAcquired = 0;
-uint8_t samplesToLog = 0;
+uint16_t samplesToLog = 0;
+uint32_t logStartTimestamp = 0;
 
 //initializes the log buffer, resets buffer head and tail and sets the flag that indicates if it's logging
 void logStart(void){
@@ -34,12 +35,13 @@ void logStart(void){
 	EEPROMstartLog();
 
 	isLogging = true;
+
+	printf("[log.c]Log started.\n\r");
 }
 
 bool checkRule(double voltage, double current){
 	double power;
 	power = voltage * current;
-
 	if (power > MAX_POWER){
 		return true;
 	}
@@ -92,6 +94,9 @@ void addToBuffer(uint32_t timestamp, double voltage, double current){
 
 		samplesToLog = HS_LOG_SAMPLE_QTY/2; //sets samplesToLog so the next samples are marked as LOG immediately
 
+		printf("[log.c]Rule voided:\n\r");
+		printf("[log.c]Voltage = %.2f | Current = %.2f\n\r", dataLogBuffer[bufferHead].voltage, dataLogBuffer[bufferHead].current);
+
 	} else if (samplesToLog > 0){
 
 		dataLogBuffer[bufferHead].directive = LOG;
@@ -124,7 +129,10 @@ void logToMemory(void){
 
 			EEPROMlogData(dataLogBuffer[bufferTail].timestamp, dataLogBuffer[bufferTail].voltage, dataLogBuffer[bufferTail].current);
 
-			dataLogBuffer[bufferTail].directive == LOGGED;
+			dataLogBuffer[bufferTail].directive = LOGGED;
+
+			printf("[log.c]Data logged:\n\r");
+			printf("[log.c]Voltage = %.2f | Current = %.2f\n\r", dataLogBuffer[bufferTail].voltage, dataLogBuffer[bufferTail].current);
 		}
 		bufferTail = (++bufferTail == HS_BUFFER_SIZE) ? 0 : bufferTail;
 	}
@@ -147,24 +155,37 @@ void logEnd(void){
 
 	logToMemory();
 
+	EEPROMendLog();
+
 	isLogging = false;
+	printf("[log.c]Log ended.\n\r");
 }
 
-void dataLogRoutine(uint32_t timestamp, double *ADCConvertedData, uint8_t *ADCnewData){
+void dataLogRoutine(uint32_t timestamp, uint8_t *ADCnewData){
 
-	if (!isLogging && ADCConvertedData[HV_VOLTAGE_CH] >= LOG_HV_VOLTAGE_THRSH){
-		logStart();
-	}
+	double *ADCConvertedData = NULL;
 
-	if (isLogging) {
-		if (*ADCnewData){
-			addToBuffer(timestamp, ADCConvertedData[HV_VOLTAGE_CH], ADCConvertedData[HV_CURRENT_CH]);
+	if (*ADCnewData){
+
+
+		ADCConvertedData = getADCConvertedData();
+
+		if (!isLogging && ADCConvertedData[HV_VOLTAGE_CH] >= LOG_HV_VOLTAGE_THRSH){
+			printf("[log.c]Starting log.\n\r");
+			logStart();
+			logStartTimestamp = timestamp;
+		}
+
+		if (isLogging) {
+			addToBuffer((timestamp - logStartTimestamp), ADCConvertedData[HV_VOLTAGE_CH], ADCConvertedData[HV_CURRENT_CH]);
 			logToMemory();
-			*ADCnewData = 0;
+
+			if (ADCConvertedData[HV_VOLTAGE_CH] < LOG_HV_VOLTAGE_THRSH){
+				printf("[log.c]Ending log.\n\r");
+				logEnd();
+			}
 		}
 
-		if (ADCConvertedData[HV_VOLTAGE_CH] < LOG_HV_VOLTAGE_THRSH){
-			logEnd();
-		}
+		*ADCnewData = 0;
 	}
 }

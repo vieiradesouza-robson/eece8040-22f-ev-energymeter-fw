@@ -59,7 +59,7 @@ EepromOperations EEPROMgetLogMetaData(void)
 	return res;
 }
 
-static void initIdPage(void)
+void initIdPage(void)
 {
 	memset(idBuffer, 0x00, sizeof(idBuffer));
 	EEPROM_SPI_WriteID(idBuffer, 0x00000000, sizeof(idBuffer)/sizeof(uint8_t));
@@ -110,10 +110,14 @@ EepromOperations EEPROMlogData(uint32_t timestamp, double voltage, double curren
 	dataIndex ++;
 
 	if ((writeAddr + dataIndex)/EEPROM_PAGESIZE >= 1) {
+
+		printf("[eeprom.c]Writing new page to eeprom address: %lu\n\r", writeAddr);
+
 		res = EEPROM_SPI_WriteBuffer(logBuffer, writeAddr, dataIndex);
 		writeAddr = writeAddr + dataIndex;
 		writeAddr = writeAddr <= EEPROM_MAX_ADDRESS ? writeAddr : 0;
 		dataIndex = 0;
+
 	}
 
 	return res;
@@ -144,6 +148,8 @@ EepromOperations EEPROMendLog(void)
 	res = EEPROM_SPI_WriteID((uint8_t*) &logList[logQty].endAddress, logQty * 3, 3);
 
 	logQty++;
+
+	printf("[eeprom.c]Log ended.\n\r");
 
 	return res;
 }

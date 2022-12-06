@@ -44,6 +44,6 @@ typedef struct log{
 	logDirective	directive;
 } logElementTypedef;
 
-void dataLogRoutine(uint32_t timestamp, double *ADCConvertedData, uint8_t *ADCnewData);
+void dataLogRoutine(uint32_t timestamp, uint8_t *ADCnewData);
 
 #endif /* INC_LOG_H_ */
