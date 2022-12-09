@@ -167,7 +167,7 @@ uint8_t ADCinit(SPI_HandleTypeDef * hspi)
   }
 
   //set CH0 gain to 32, CH1 to 128 and CH2 to 128
-  res = ADCsetGain(GAIN_PGA_GAIN_32, GAIN_PGA_GAIN_1, GAIN_PGA_GAIN_32);
+  res = ADCsetGain(GAIN_PGA_GAIN_32, GAIN_PGA_GAIN_128, GAIN_PGA_GAIN_64);
   if (res == HAL_ERROR){
 	  printf("[adc_spi.c]Error setting GAIN register.\n\r");
 	  return res;

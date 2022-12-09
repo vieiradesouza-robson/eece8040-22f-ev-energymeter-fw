@@ -38,7 +38,7 @@ EepromOperations EEPROMgetLogMetaData(void)
 		if (i == 0) {
 			logList[i/3].startAddress = 0;
 		} else {
-			logList[i/3].startAddress = logList[(i/3)-1].endAddress + 1;
+			logList[i/3].startAddress = logList[(i/3)-1].endAddress == 0 ? 0 : logList[(i/3)-1].endAddress + 1;
 		}
 
 		logList[i/3].endAddress = idBuffer[i] + (idBuffer[i+1] << 8) + (idBuffer[i+2] << 16);
