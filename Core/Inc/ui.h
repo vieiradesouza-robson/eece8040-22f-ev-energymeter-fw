@@ -12,11 +12,21 @@
 
 #include "common.h"
 #include "stdio.h"
+#include "string.h"
 #include "integrity.h"
+#include "stdbool.h"
+#include "eeprom.h"
 
+typedef struct userInterfaceMenu{
+	struct userInterfaceMenu *parent;
+	char menuText[150];
+	struct userInterfaceMenu *child[5];
+	void (*f)(void);
+} userInterfaceMenuTypedef;
 
 void printWelcomeMessage( void );
 void printErrorMessage (ERROR_CODES error);
+void initUI(void);
 
 #endif /* INC_UI_H_ */
 

@@ -124,20 +124,16 @@ int main(void)
 	initPowerModule();
 	EEPROM_SPI_INIT();
 
-	while(HAL_GPIO_ReadPin(ADC_DRDY_GPIO_Port, ADC_DRDY_Pin) == GPIO_PIN_SET) {}
-
 	if (ADCinit(&hspi1) != HAL_OK) {
 		printf("Error initializing ADC.\n\r");
 	}
-
-	HAL_NVIC_EnableIRQ(EXTI3_IRQn);
 
 	/* USER CODE END 2 */
 
 	/* Infinite loop */
 	/* USER CODE BEGIN WHILE */
 
-	printWelcomeMessage();
+	initUI();
 	while (1) {
 		/* USER CODE END WHILE */
 
