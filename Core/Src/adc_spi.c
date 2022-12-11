@@ -157,31 +157,35 @@ uint8_t ADCinit(SPI_HandleTypeDef * hspi)
 		ADCdummy[i] = DUMMY;
 	}
 
-  //write mode register to clear reset flag and make DRDY active low pulse
-  regConfig = (MODE_REG_CRC_EN | MODE_RX_CRC_EN | MODE_CRC_TYPE | MODE_RESET_CLEAR |
-		  	   MODE_WLENGTH | MODE_TIMEOUT | MODE_DRDY_SEL | MODE_DRDY_HIZ | MODE_DRDY_FMT_PULSE);
-  res = ADCwriteReg(MODE, regConfig);
-  if (res == HAL_ERROR){
+	while(HAL_GPIO_ReadPin(ADC_DRDY_GPIO_Port, ADC_DRDY_Pin) == GPIO_PIN_SET) {}
+
+	//write mode register to clear reset flag and make DRDY active low pulse
+	regConfig = (MODE_REG_CRC_EN | MODE_RX_CRC_EN | MODE_CRC_TYPE | MODE_RESET_CLEAR |
+			   MODE_WLENGTH | MODE_TIMEOUT | MODE_DRDY_SEL | MODE_DRDY_HIZ | MODE_DRDY_FMT_PULSE);
+	res = ADCwriteReg(MODE, regConfig);
+	if (res == HAL_ERROR){
 	  printf("[adc_spi.c]Error setting MODE register.\n\r");
 	  return res;
-  }
+	}
 
-  //set CH0 gain to 32, CH1 to 128 and CH2 to 128
-  res = ADCsetGain(GAIN_PGA_GAIN_32, GAIN_PGA_GAIN_128, GAIN_PGA_GAIN_64);
-  if (res == HAL_ERROR){
+	//set CH0 gain to 32, CH1 to 128 and CH2 to 128
+	res = ADCsetGain(GAIN_PGA_GAIN_32, GAIN_PGA_GAIN_128, GAIN_PGA_GAIN_64);
+	if (res == HAL_ERROR){
 	  printf("[adc_spi.c]Error setting GAIN register.\n\r");
 	  return res;
-  }
+	}
 
-  //set OSR to 16256
-  regConfig = (CLOCK_CH0_EN | CLOCK_CH1_EN | CLOCK_CH2_EN | CLOCK_TBM | CLOCK_OSR_16256 | CLOCK_PWR);
-  res = ADCwriteReg(CLOCK, regConfig);
-  if (res == HAL_ERROR){
+	//set OSR to 16256
+	regConfig = (CLOCK_CH0_EN | CLOCK_CH1_EN | CLOCK_CH2_EN | CLOCK_TBM | CLOCK_OSR_16256 | CLOCK_PWR);
+	res = ADCwriteReg(CLOCK, regConfig);
+	if (res == HAL_ERROR){
 	  printf("[adc_spi.c]Error setting OSR register.\n\r");
 	  return res;
-  }
+	}
 
-  printf("[adc_spi.c]ADC initialized OK.\n\r");
-  return res;
+	HAL_NVIC_EnableIRQ(EXTI3_IRQn);
+
+	printf("[adc_spi.c]ADC initialized OK.\n\r");
+	return res;
 }
 

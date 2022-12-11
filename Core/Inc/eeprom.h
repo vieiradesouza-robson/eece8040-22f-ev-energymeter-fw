@@ -28,6 +28,12 @@ typedef struct {
 	uint32_t size;
 } logMetaData;
 
+typedef struct {
+	uint32_t logQty;
+	float memoryOccupied;
+	float memoryRemaining;
+} eepromStatisticsTypeDef;
+
 EepromOperations EEPROMgetLogMetaData(void);
 EepromOperations EEPROMstartLog(void);
 EepromOperations EEPROMlogData(uint32_t timestamp, double voltage, double current);
@@ -36,5 +42,7 @@ EepromOperations EEPROMreadData(uint8_t* dataBuffer, uint32_t address, uint32_t 
 uint8_t *EEPROMextraInfo(void);
 void getLogInfo(uint32_t logId, uint32_t* startAddress, uint32_t* endAddress, uint32_t* size);
 void initIdPage(void);
+void getEEPROMstatistics(eepromStatisticsTypeDef *eepromStat);
+void clearLogs(void);
 
 #endif /* INC_EEPROM_H_ */
