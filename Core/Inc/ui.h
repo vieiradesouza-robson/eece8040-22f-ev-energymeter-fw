@@ -26,7 +26,7 @@ typedef struct userInterfaceMenu{
 
 void printWelcomeMessage( void );
 void printErrorMessage (ERROR_CODES error);
-void initUI(void);
+void uiCommand(uint8_t *rxData);
 
 #endif /* INC_UI_H_ */
 

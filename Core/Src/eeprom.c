@@ -34,6 +34,8 @@ EepromOperations EEPROMgetLogMetaData(void)
 		return res;
 	}
 
+	logQty = 0;
+
 	for (uint16_t i = 0; i < EEPROM_MAX_LOG * 3; i += 3) {
 		if (i == 0) {
 			logList[i/3].startAddress = 0;
@@ -57,6 +59,70 @@ EepromOperations EEPROMgetLogMetaData(void)
 	}
 
 	return res;
+}
+
+void getEEPROMstatistics(eepromStatisticsTypeDef *eepromStat){
+
+	EEPROMgetLogMetaData();
+
+	if(logQty != 0){
+		eepromStat->logQty = logQty;
+		eepromStat->memoryOccupied = (((float)logList[logQty-1].endAddress)/128.0);
+		eepromStat->memoryRemaining = 4.0-(eepromStat->memoryOccupied / 1000.0);
+	} else {
+		eepromStat->logQty = 0;
+		eepromStat->memoryOccupied = 0.0;
+		eepromStat->memoryRemaining = 4.0-(eepromStat->memoryOccupied / 1000.0);
+	}
+}
+
+void clearLogs(void){
+	memset(idBuffer, 0x00, (EEPROM_PAGESIZE - (EEPROM_PARAMETERS_SIZE)));
+	EEPROM_SPI_WriteID(idBuffer, 0x00000000, (EEPROM_PAGESIZE - (EEPROM_PARAMETERS_SIZE)));
+}
+
+void downloadLogsUART(void){
+	uint8_t logData[EEPROM_PAGESIZE];
+	uint32_t readAdd;
+	uint16_t byteQty;
+	float voltage, current;
+	uint32_t timestamp;
+	char fileName[9];
+	uint32_t totalSamples, samplesSent;
+
+	EEPROMgetLogMetaData();
+
+	printf("$simB4LmL/SS\r\n"); //starting data stream
+
+	for (uint8_t i = 0; i<logQty; i++){
+
+		totalSamples = logList[i].size/8;
+		samplesSent = 0;
+
+		sprintf(fileName, "log%02d\r\n", i);
+		printf("$simB4LmL/BOF/%s", fileName); //starting new file
+		printf("$simB4LmL/LD/%lu\r\n", totalSamples + 2); //file header: putting log size in first line
+		printf("$simB4LmL/LD/timestamp,voltage,current\r\n"); //file header: fields label
+
+		readAdd = logList[i].startAddress;
+
+		while (readAdd < logList[i].endAddress){
+			byteQty = (readAdd + EEPROM_PAGESIZE) <= logList[i].endAddress ? EEPROM_PAGESIZE : (logList[i].endAddress - readAdd + 1);
+			EEPROM_SPI_ReadBuffer(logData, readAdd, byteQty);
+			for (uint16_t j = 0; j<EEPROM_PAGESIZE && samplesSent<totalSamples; j+=8){
+				timestamp = (logData[j] << 24) + (logData[j+1] << 16) + (logData[j+2] << 8) + logData[j+3];
+				voltage = ((float)((logData[j+4] << 8) + logData[j+5]))/100.0;
+				current = ((float)((logData[j+6] << 8) + logData[j+7]))/100.0;
+				printf("$simB4LmL/LD/%lu,%.2f,%.2f\r\n", timestamp, voltage, current);
+				samplesSent++;
+			}
+			readAdd = readAdd + byteQty;
+		}
+
+		printf("$simB4LmL/EOF/%s", fileName); //ending file
+	}
+
+	printf("$simB4LmL/ES\r\n"); //ending data stream
 }
 
 void initIdPage(void)
