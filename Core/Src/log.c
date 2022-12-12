@@ -17,6 +17,7 @@ bool isLogging = false;
 uint32_t samplesAcquired = 0;
 uint16_t samplesToLog = 0;
 uint32_t logStartTimestamp = 0;
+bool logEndRequested = false;
 
 //initializes the log buffer, resets buffer head and tail and sets the flag that indicates if it's logging
 void logStart(void){
@@ -37,6 +38,14 @@ void logStart(void){
 	isLogging = true;
 
 	printf("[log.c]Log started.\n\r");
+}
+
+void requestLogEnd(){
+	logEndRequested = true;
+}
+
+bool isLoggingOn(){
+	return isLogging;
 }
 
 bool checkRule(double voltage, double current){
@@ -186,5 +195,8 @@ void dataLogRoutine(uint32_t timestamp, uint8_t *ADCnewData){
 		}
 
 		*ADCnewData = 0;
+	} else if (logEndRequested && isLogging){
+		printf("[log.c]Ending log.\n\r");
+		logEnd();
 	}
 }

@@ -45,5 +45,7 @@ typedef struct log{
 } logElementTypedef;
 
 void dataLogRoutine(uint32_t timestamp, uint8_t *ADCnewData);
+void requestLogEnd();
+bool isLoggingOn();
 
 #endif /* INC_LOG_H_ */
