@@ -15,6 +15,7 @@
 #include "ports.h"
 #include "stdbool.h"
 #include "main.h"
+#include "log.h"
 
 static bool waitingToTurnOff;
 
@@ -30,7 +31,7 @@ static bool waitingToTurnOff;
  */
 static GPIO_PinState getPowerEnState(void)
 {
-	return getPinState (PWR_EN_GPIO_Port, PWR_EN_Pin);
+	return getPinState(PWR_EN_GPIO_Port, PWR_EN_Pin);
 }
 
 
@@ -86,21 +87,15 @@ void initPowerModule (void)
  */
 void checkPowerEnState (void)
 {
-	waitingToTurnOff = (bool)getPowerEnState();
+	waitingToTurnOff = !((bool)getPowerEnState());
 
 	if(waitingToTurnOff) {
-		//Turn off module if no pending task, do nothing otherwise.
-//		if(!pendingTask()){
-		resetMcuPwrEn();
-//		} else {
-		//An option might be to finish any pending task in
-		//this section and shut down after that.
-//		}
-	} else {
-		//Refresh Power Pins State and Variables
-		setMcuPwrEn();
+		if (isLoggingOn()){
+			requestLogEnd();
+		} else {
+			resetMcuPwrEn();
+		}
 	}
-
 }
 
 

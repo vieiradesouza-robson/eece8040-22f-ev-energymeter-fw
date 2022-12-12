@@ -44,5 +44,6 @@ void getLogInfo(uint32_t logId, uint32_t* startAddress, uint32_t* endAddress, ui
 void initIdPage(void);
 void getEEPROMstatistics(eepromStatisticsTypeDef *eepromStat);
 void clearLogs(void);
+void downloadLogsUART(void);
 
 #endif /* INC_EEPROM_H_ */
