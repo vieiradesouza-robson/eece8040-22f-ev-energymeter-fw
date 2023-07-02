@@ -137,7 +137,7 @@ uint8_t ADCwriteReg(uint8_t reg, uint32_t data)
 
 uint8_t ADCsetGain(uint8_t log2GainCH0, uint8_t log2GainCH1, uint8_t log2GainCH2)
 {
-  uint32_t gainData = 0x00000000 + ((0x07 & log2GainCH0)<<16) + ((0x07 & log2GainCH1) << 20) + ((0x07 & log2GainCH2) << 24);
+  uint32_t gainData = 0x00000000 + ((0x07 & log2GainCH0)<<8) + ((0x07 & log2GainCH1) << 12) + ((0x07 & log2GainCH2) << 16);
 
   ADCgain[0] = pow(2, (double)log2GainCH0);
   ADCgain[1] = pow(2, (double)log2GainCH1);
@@ -168,8 +168,8 @@ uint8_t ADCinit(SPI_HandleTypeDef * hspi)
 	  return res;
 	}
 
-	//set CH0 gain to 32, CH1 to 128 and CH2 to 128
-	res = ADCsetGain(GAIN_PGA_GAIN_32, GAIN_PGA_GAIN_128, GAIN_PGA_GAIN_64);
+	//set CH0 gain to 32, CH1 to 1 and CH2 to 32
+	res = ADCsetGain(GAIN_PGA_GAIN_32, GAIN_PGA_GAIN_1, GAIN_PGA_GAIN_32);
 	if (res == HAL_ERROR){
 	  printf("[adc_spi.c]Error setting GAIN register.\n\r");
 	  return res;

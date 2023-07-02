@@ -17,6 +17,7 @@
 #include "eeprom.h"
 #include "sd.h"
 #include "adc.h"
+#include "ui.h"
 
 
 #define HS_BUFFER_SIZE			250
@@ -25,7 +26,7 @@
 
 #define LOG_HV_VOLTAGE_THRSH	5.0
 
-#define MAX_POWER		85000
+#define MAX_POWER		20
 #define MAX_VOLTAGE		600
 
 typedef enum

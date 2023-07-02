@@ -191,6 +191,7 @@ void dataLogRoutine(uint32_t timestamp, uint8_t *ADCnewData){
 			if (ADCConvertedData[HV_VOLTAGE_CH] < LOG_HV_VOLTAGE_THRSH){
 				printf("[log.c]Ending log.\n\r");
 				logEnd();
+				sendMemoryStat();
 			}
 		}
 
@@ -198,5 +199,6 @@ void dataLogRoutine(uint32_t timestamp, uint8_t *ADCnewData){
 	} else if (logEndRequested && isLogging){
 		printf("[log.c]Ending log.\n\r");
 		logEnd();
+		sendMemoryStat();
 	}
 }

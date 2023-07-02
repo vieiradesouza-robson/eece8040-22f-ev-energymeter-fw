@@ -23,6 +23,13 @@ userInterfaceMenuTypedef shuntValueMenu;
 userInterfaceMenuTypedef voltageDividerMenu;
 userInterfaceMenuTypedef aboutMenu;
 
+void sendMemoryStat(){
+	eepromStatisticsTypeDef eepromStat;
+
+	getEEPROMstatistics(&eepromStat);
+	printf("$239C5zAI/%lu/%.1f/%.2f\r\n", eepromStat.logQty, eepromStat.memoryOccupied, eepromStat.memoryRemaining);
+}
+
 /* Function      : uiCommand
  *
  * Description   : executes the command required by GUI
@@ -33,10 +40,9 @@ userInterfaceMenuTypedef aboutMenu;
  */
 
 void uiCommand(uint8_t *rxData){
-	eepromStatisticsTypeDef eepromStat;
+
 	if (!memcmp(rxData, "$239C5zAI", 9)){
-		getEEPROMstatistics(&eepromStat);
-		printf("$239C5zAI/%lu/%.1f/%.2f\r\n", eepromStat.logQty, eepromStat.memoryOccupied, eepromStat.memoryRemaining);
+		sendMemoryStat();
 
 	} else if (!memcmp(rxData, "$simB4LmL", 9)){
 		downloadLogsUART();
@@ -44,8 +50,7 @@ void uiCommand(uint8_t *rxData){
 	} else if (!memcmp(rxData, "$ep8uBRMI", 9)){
 		clearLogs();
 		printf("$ep8uBRMI\r\n");
-		getEEPROMstatistics(&eepromStat);
-		printf("$239C5zAI/%lu/%.1f/%.2f\r\n", eepromStat.logQty, eepromStat.memoryOccupied, eepromStat.memoryRemaining);
+		sendMemoryStat();
 
 	} else if (!memcmp(rxData, "$AIQvPX5u", 9)){
 		printf("WIP: Read Parameters\r\n");
